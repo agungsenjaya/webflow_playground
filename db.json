@@ -1,1 +1,382 @@
-{}
+{
+  "list-video-tutorials": [
+    {
+      "id": 1,
+      "title": "1 - The Last Deflagration",
+      "category": "new",
+      "materials": [
+        "Metal",
+        "Skin",
+        "hair"
+      ],
+      "scales": [
+        ">75mm",
+        "bust"
+      ],
+      "img": "/img/slider/new/1 - The Last Deflagration_converted.avif",
+      "videos": {
+        "en": [],
+        "es": []
+      }
+    },
+    {
+      "id": 2,
+      "title": "2 - Blood Angel",
+      "category": "new",
+      "materials": [
+        "Metal",
+        "terrain"
+      ],
+      "scales": [
+        "<54mm"
+      ],
+      "img": "/img/slider/new/2 - blood angel_converted.avif",
+      "videos": {
+        "en": [
+          "https://player.vimeo.com/video/450420713",
+          "https://player.vimeo.com/video/450420813",
+          "https://player.vimeo.com/video/454324614",
+          "https://player.vimeo.com/video/463347183",
+          "https://player.vimeo.com/video/463354744",
+          "https://player.vimeo.com/video/463765305",
+          "https://player.vimeo.com/video/463767236",
+          "https://player.vimeo.com/video/464010906"
+        ],
+        "es": [
+          "https://player.vimeo.com/video/449687321",
+          "https://player.vimeo.com/video/450420959",
+          "https://player.vimeo.com/video/454324385",
+          "https://player.vimeo.com/video/463344599",
+          "https://player.vimeo.com/video/463352214",
+          "https://player.vimeo.com/video/463357171",
+          "https://player.vimeo.com/video/463766836",
+          "https://player.vimeo.com/video/463996558"
+        ]
+      }
+    },
+    {
+      "id": 3,
+      "title": "2.3 - Protecting my land",
+      "category": "new",
+      "materials": [
+        "Skin",
+        "Metal",
+        "Fabrics",
+        "Hair"
+      ],
+      "scales": [
+        "bust"
+      ],
+      "img": "/img/slider/new/2.3 - Protecting my land_converted.avif",
+      "videos": {
+        "en": [
+          "https://player.vimeo.com/video/412147427",
+          "https://player.vimeo.com/video/412224265",
+          "https://player.vimeo.com/video/412225054",
+          "https://player.vimeo.com/video/413732997",
+          "https://player.vimeo.com/video/413733604",
+          "https://player.vimeo.com/video/413734328"
+        ],
+        "es": [
+          "https://player.vimeo.com/video/412223724",
+          "https://player.vimeo.com/video/411987435",
+          "https://player.vimeo.com/video/411988337",
+          "https://player.vimeo.com/video/413523092",
+          "https://player.vimeo.com/video/413525132",
+          "https://player.vimeo.com/video/413519768"
+        ]
+      }
+    },
+    {
+      "id": 4,
+      "title": "3 - Ultramarine",
+      "category": "new",
+      "materials": [
+        "Metal",
+        "Terrain"
+      ],
+      "scales": [
+        "<54mm"
+      ],
+      "img": "/img/slider/new/3 - ultramarine_converted.avif",
+      "videos": {
+        "en": [
+          "https://player.vimeo.com/video/314991351",
+          "https://player.vimeo.com/video/314990919",
+          "https://player.vimeo.com/video/315335331",
+          "https://player.vimeo.com/video/315336180",
+          "https://player.vimeo.com/video/315336679",
+          "https://player.vimeo.com/video/315996915",
+          "https://player.vimeo.com/video/315997435",
+          "https://player.vimeo.com/video/315996816"
+        ],
+        "es": [
+          "https://player.vimeo.com/video/314513892",
+          "https://player.vimeo.com/video/314514227",
+          "https://player.vimeo.com/video/314514408",
+          "https://player.vimeo.com/video/314613605",
+          "https://player.vimeo.com/video/314612885",
+          "https://player.vimeo.com/video/315996080",
+          "https://player.vimeo.com/video/315995552",
+          "https://player.vimeo.com/video/315996592"
+        ]
+      }
+    },
+    {
+      "id": 5,
+      "title": "4 - Eva",
+      "category": "new",
+      "materials": [
+        "Skin",
+        "Metal",
+        "Fabrics",
+        "Hair"
+      ],
+      "scales": [
+        "bust"
+      ],
+      "img": "/img/slider/new/4 - eva_converted.avif",
+      "videos": {
+        "en": [
+          "https://player.vimeo.com/video/362385275/654a56fa5b",
+          "https://player.vimeo.com/video/362385097",
+          "https://player.vimeo.com/video/362384802",
+          "https://player.vimeo.com/video/362437703",
+          "https://player.vimeo.com/video/362466124",
+          "https://player.vimeo.com/video/365113182",
+          "https://player.vimeo.com/video/365113066",
+          "https://player.vimeo.com/video/365232052",
+          "https://player.vimeo.com/video/365232296",
+          "https://player.vimeo.com/video/365232144",
+          "https://player.vimeo.com/video/365255335",
+          "https://player.vimeo.com/video/365262109"
+        ],
+        "es": [
+          "https://player.vimeo.com/video/362385221",
+          "https://player.vimeo.com/video/362384936",
+          "https://player.vimeo.com/video/362384629",
+          "https://player.vimeo.com/video/362429459",
+          "https://player.vimeo.com/video/362455229",
+          "https://player.vimeo.com/video/364049907",
+          "https://player.vimeo.com/video/364050018",
+          "https://player.vimeo.com/video/364049767",
+          "https://player.vimeo.com/video/364050337",
+          "https://player.vimeo.com/video/364049507",
+          "https://player.vimeo.com/video/364050237",
+          "https://player.vimeo.com/video/364050107"
+        ]
+      }
+    },
+    {
+      "id": 6,
+      "title": "5 - The Witcher",
+      "category": "new",
+      "materials": [
+        "Skin",
+        "Fabrics"
+      ],
+      "scales": [
+        "busts"
+      ],
+      "img": "/img/slider/new/5 - the witcher_converted.avif",
+      "videos": {
+        "en": [
+          "https://player.vimeo.com/video/499983490"
+        ],
+        "es": [
+          "https://player.vimeo.com/video/499984609"
+        ]
+      }
+    },
+    {
+      "id": 7,
+      "title": "6 - Akito",
+      "category": "new",
+      "materials": [
+        "Skin",
+        "Metal",
+        "Fabrics",
+        "Leather",
+        "Hair"
+      ],
+      "scales": [
+        "bust"
+      ],
+      "img": "/img/slider/new/6 - akito_converted.avif",
+      "videos": {
+        "en": [
+          "https://player.vimeo.com/video/386817182",
+          "https://player.vimeo.com/video/386804779",
+          "https://player.vimeo.com/video/386284168",
+          "https://player.vimeo.com/video/386831561",
+          "https://player.vimeo.com/video/391034244/b2b3b6498b",
+          "https://player.vimeo.com/video/391034450",
+          "https://player.vimeo.com/video/392274569",
+          "https://player.vimeo.com/video/392193092"
+        ],
+        "es": [
+          "https://player.vimeo.com/video/386350759",
+          "https://player.vimeo.com/video/386284483",
+          "https://player.vimeo.com/video/386284168",
+          "https://player.vimeo.com/video/386564637",
+          "https://player.vimeo.com/video/390851093",
+          "https://player.vimeo.com/video/390972784",
+          "https://player.vimeo.com/video/392055024",
+          "https://player.vimeo.com/video/392071522"
+        ]
+      }
+    },
+    {
+      "id": 8,
+      "title": "6 - Kvothe",
+      "category": "new",
+      "materials": [
+        "Skin",
+        "Fabrics",
+        "Hair"
+      ],
+      "scales": [
+        "Bust"
+      ],
+      "img": "/img/slider/new/6 - Kvothe_converted.avif",
+      "videos": {
+        "en": [
+          "https://player.vimeo.com/video/491868868",
+          "https://player.vimeo.com/video/491866129",
+          "https://player.vimeo.com/video/491837924",
+          "https://player.vimeo.com/video/491848069",
+          "https://player.vimeo.com/video/491853234",
+          "https://player.vimeo.com/video/491862069",
+          "https://player.vimeo.com/video/491864606",
+          "https://player.vimeo.com/video/491870196",
+          "https://player.vimeo.com/video/491871189"
+        ],
+        "es": [
+          "https://player.vimeo.com/video/488229978",
+          "https://player.vimeo.com/video/488228902",
+          "https://player.vimeo.com/video/488695961",
+          "https://player.vimeo.com/video/489082842",
+          "https://player.vimeo.com/video/491829411",
+          "https://player.vimeo.com/video/491834365",
+          "https://player.vimeo.com/video/491835636",
+          "https://player.vimeo.com/video/491872697",
+          "https://player.vimeo.com/video/491873694"
+        ]
+      }
+    },
+    {
+      "id": 9,
+      "title": "8 - Mads",
+      "category": "new",
+      "materials": [
+        "Skin"
+      ],
+      "scales": [
+        "Bust"
+      ],
+      "img": "/img/slider/new/8 - Mads_converted.avif",
+      "videos": {
+        "en": [
+          "https://player.vimeo.com/video/525248580"
+        ],
+        "es": [
+          "https://player.vimeo.com/video/525247879"
+        ]
+      }
+    },
+    {
+      "id": 10,
+      "title": "9- Noko",
+      "category": "new",
+      "materials": [
+        "Skin",
+        "Fabrics",
+        "Leather",
+        "Hair"
+      ],
+      "scales": [
+        "Bust"
+      ],
+      "img": "/img/slider/new/9 - noko_converted.avif",
+      "videos": {
+        "en": [
+          "https://player.vimeo.com/video/368877859",
+          "https://player.vimeo.com/video/368890212",
+          "https://player.vimeo.com/video/369309919"
+        ],
+        "es": [
+          "https://player.vimeo.com/video/368630977",
+          "https://player.vimeo.com/video/368631107",
+          "https://player.vimeo.com/video/368806174"
+        ]
+      }
+    },
+    {
+      "id": 11,
+      "title": "10 - Carmen",
+      "category": "new",
+      "materials": [
+        "skin",
+        "Fabrics",
+        "hair"
+      ],
+      "scales": [
+        "Bust"
+      ],
+      "img": "/img/slider/new/10 - carmen_converted.avif",
+      "videos": {
+        "en": [
+          "https://player.vimeo.com/video/307790315",
+          "https://player.vimeo.com/video/307290937",
+          "https://player.vimeo.com/video/307790331",
+          "https://player.vimeo.com/video/308344382",
+          "https://player.vimeo.com/video/308346135",
+          "https://player.vimeo.com/video/308345637",
+          "https://player.vimeo.com/video/308342923",
+          "https://player.vimeo.com/video/308343532"
+        ],
+        "es": [
+          "https://player.vimeo.com/video/307790301",
+          "https://player.vimeo.com/video/307290770",
+          "https://player.vimeo.com/video/307291118",
+          "https://player.vimeo.com/video/307291672",
+          "https://player.vimeo.com/video/307511037",
+          "https://player.vimeo.com/video/307511954",
+          "https://player.vimeo.com/video/307510671",
+          "https://player.vimeo.com/video/308343532"
+        ]
+      }
+    },
+    {
+      "id": 12,
+      "title": "11- Eldar",
+      "category": "new",
+      "materials": [
+        "Metal",
+        "Fabrics"
+      ],
+      "scales": [
+        ">75mm"
+      ],
+      "img": "/img/slider/new/11 - Eldar_converted.avif",
+      "videos": {
+        "en": [
+          "https://player.vimeo.com/video/374988546",
+          "https://player.vimeo.com/video/374988704",
+          "https://player.vimeo.com/video/374988765",
+          "https://player.vimeo.com/video/374990357",
+          "https://player.vimeo.com/video/379254526",
+          "https://player.vimeo.com/video/379282186"
+        ],
+        "es": [
+          "https://player.vimeo.com/video/374980556",
+          "https://player.vimeo.com/video/374980823",
+          "https://player.vimeo.com/video/374980990",
+          "https://player.vimeo.com/video/374980945",
+          "https://player.vimeo.com/video/379243993",
+          "https://player.vimeo.com/video/379244125"
+        ]
+      }
+    }
+  ]
+}
