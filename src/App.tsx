@@ -101,6 +101,7 @@ export default function App() {
   const [activeVideoUrl, setActiveVideoUrl] = useState<string>("");
   const [isMaterialsVisible, setIsMaterialsVisible] = useState(false);
   const [isScalesVisible, setIsScalesVisible] = useState(false);
+  const [videoMode, setVideoMode] = useState<"new" | "old">("new");
 
   // Fetch tutorial data from json-server and set initial hidden state for materials and scales
   useEffect(() => {
@@ -118,12 +119,28 @@ export default function App() {
     });
 
     // Hide scales by default on load (moving to the left)
-    // Note: since class names starting with digits like "75mm" need special query selectors, 
-    // we can use document.querySelectorAll or select them by class list. 
-    // In GSAP we can use "." + "75mm" directly if we target them correctly.
     gsap.set(".bust, .\\37 5mm, .\\35 4mm", {
       opacity: 0,
       x: -120,
+    });
+
+    // Setup 3D flip starting states for new/old videos panels
+    // Set perspective on the parent window or body container to enable 3D depth
+    gsap.set(".new-videos, .old-videos", {
+      backfaceVisibility: "hidden",
+      transformStyle: "preserve-3d",
+    });
+
+    gsap.set(".old-videos", {
+      opacity: 0,
+      rotateY: -180,
+      pointerEvents: "none",
+    });
+
+    gsap.set(".new-videos", {
+      opacity: 1,
+      rotateY: 0,
+      pointerEvents: "auto",
     });
   }, []);
 
@@ -389,10 +406,17 @@ export default function App() {
         yoyo: true,
         repeat: 1,
         overwrite: "auto",
-      }
+      },
     );
 
-    const targetClasses = [".skin", ".metal", ".fabric", ".terrain", ".leather", ".hair"];
+    const targetClasses = [
+      ".skin",
+      ".metal",
+      ".fabric",
+      ".terrain",
+      ".leather",
+      ".hair",
+    ];
     gsap.killTweensOf(targetClasses);
 
     if (isMaterialsVisible) {
@@ -407,7 +431,7 @@ export default function App() {
         overwrite: "auto",
         onComplete: () => {
           setIsMaterialsVisible(false);
-        }
+        },
       });
     } else {
       // 2. Stagger Slide up to show
@@ -426,8 +450,8 @@ export default function App() {
           overwrite: "auto",
           onComplete: () => {
             setIsMaterialsVisible(true);
-          }
-        }
+          },
+        },
       );
     }
   };
@@ -449,7 +473,7 @@ export default function App() {
         yoyo: true,
         repeat: 1,
         overwrite: "auto",
-      }
+      },
     );
 
     const targetClasses = [".bust", ".\\37 5mm", ".\\35 4mm"];
@@ -466,7 +490,7 @@ export default function App() {
         overwrite: "auto",
         onComplete: () => {
           setIsScalesVisible(false);
-        }
+        },
       });
     } else {
       // 2. Stagger Slide right to show
@@ -485,11 +509,83 @@ export default function App() {
           overwrite: "auto",
           onComplete: () => {
             setIsScalesVisible(true);
-          }
-        }
+          },
+        },
       );
     }
   };
+
+  // Handle switch-videos-trigger click:
+  // 3D card flip effect between .new-videos and .old-videos
+  const handleSwitchVideosClick = () => {
+    gsap.killTweensOf(".new-videos, .old-videos");
+
+    if (videoMode === "new") {
+      // Flip New Videos out (rotate to 180deg)
+      gsap.to(".new-videos", {
+        rotateY: 180,
+        opacity: 0,
+        duration: 2,
+        ease: "power2.out",
+        overwrite: "auto",
+        onStart: () => {
+          gsap.set(".new-videos", { pointerEvents: "none" });
+        },
+      });
+
+      // Flip Old Videos in (rotate from -180deg to 0deg)
+      gsap.fromTo(
+        ".old-videos",
+        { rotateY: -180, opacity: 0 },
+        {
+          rotateY: 0,
+          opacity: 1,
+          duration: 2,
+          ease: "power2.out",
+          overwrite: "auto",
+          onStart: () => {
+            gsap.set(".old-videos", { pointerEvents: "auto" });
+          },
+          onComplete: () => {
+            setVideoMode("old");
+          },
+        },
+      );
+    } else {
+      // Flip Old Videos out (rotate to -180deg)
+      gsap.to(".old-videos", {
+        rotateY: -180,
+        opacity: 0,
+        duration: 2,
+        ease: "power2.out",
+        overwrite: "auto",
+        onStart: () => {
+          gsap.set(".old-videos", { pointerEvents: "none" });
+        },
+      });
+
+      // Flip New Videos in (rotate from 180deg to 0deg)
+      gsap.fromTo(
+        ".new-videos",
+        { rotateY: 180, opacity: 0 },
+        {
+          rotateY: 0,
+          opacity: 1,
+          duration: 2,
+          ease: "power2.out",
+          overwrite: "auto",
+          onStart: () => {
+            gsap.set(".new-videos", { pointerEvents: "auto" });
+          },
+          onComplete: () => {
+            setVideoMode("new");
+          },
+        },
+      );
+    }
+  };
+
+  // Close dialog on Escape key
 
   // Close dialog on Escape key
   useEffect(() => {
@@ -547,15 +643,24 @@ export default function App() {
       />
       <img
         src="https://cdn.prod.website-files.com/6a02cb170cdbff0075ac40a2/6a2ac163daa0ae180093a9a6_2%2C7%20-%20new%20videos%20-%20English%20(triggers%20when%20you%20click%20on%20old%20videos).avif"
-        className="w-full absolute inset-0"
+        className="w-full absolute inset-0 new-videos"
         alt=""
+      />
+      <img
+        src="https://cdn.prod.website-files.com/6a02cb170cdbff0075ac40a2/6a5653ba46bd47cbec71f409_2%2C6%20-%20old.v%20-%20English_converted.avif"
+        className="w-full absolute inset-0 old-videos"
+        alt=""
+      />
+      <div
+        className="absolute inset-0 left-auto right-[10vw] bottom-auto h-[9vw] w-[18vw] cursor-pointer z-10 switch-videos-trigger"
+        onClick={handleSwitchVideosClick}
       />
       <img
         src="https://cdn.prod.website-files.com/6a02cb170cdbff0075ac40a2/6a2abcd1d6145832d03b75a4_2%2C9%20-%20Scale%20-%20English.avif"
         className="w-full absolute inset-0 scales"
         alt=""
       />
-      <div 
+      <div
         className="absolute inset-0 bottom-auto h-[12vw] w-[15vw] cursor-pointer z-10 scales-trigger"
         onClick={handleScalesTriggerClick}
       />
@@ -579,7 +684,7 @@ export default function App() {
         className="w-full absolute inset-0 materials"
         alt=""
       />
-      <div 
+      <div
         className="absolute inset-0 left-[12vw] top-auto h-[6vw] w-[17vw] cursor-pointer z-10 materials-trigger"
         onClick={handleMaterialsTriggerClick}
       />
