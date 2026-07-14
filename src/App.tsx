@@ -99,8 +99,9 @@ export default function App() {
   const [tutorials, setTutorials] = useState<VideoTutorial[]>([]);
   const [language, setLanguage] = useState<"en" | "es">("en");
   const [activeVideoUrl, setActiveVideoUrl] = useState<string>("");
+  const [isMaterialsVisible, setIsMaterialsVisible] = useState(false);
 
-  // Fetch tutorial data from json-server
+  // Fetch tutorial data from json-server and set initial hidden state for materials
   useEffect(() => {
     fetch("http://localhost:3001/list-video-tutorials")
       .then((res) => res.json())
@@ -108,6 +109,12 @@ export default function App() {
         setTutorials(data);
       })
       .catch((err) => console.error("Error fetching tutorials:", err));
+
+    // Hide materials by default on load
+    gsap.set(".skin, .metal, .fabric, .terrain, .leather, .hair", {
+      opacity: 0,
+      y: 100,
+    });
   }, []);
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -177,7 +184,9 @@ export default function App() {
       // Maximum distance from activeIndex among visible cards:
       // Left side goes up to 4 cards away, right side goes up to 3 cards away.
       // Let's find the absolute diff from activeIndex for each, and invert it so larger distance falls first.
-      const maxDistance = Math.max(...visibleCardTransforms.map(t => Math.abs(t.diff)));
+      const maxDistance = Math.max(
+        ...visibleCardTransforms.map((t) => Math.abs(t.diff)),
+      );
 
       // 3. For each visible card, animate from above with delay based on distance to center
       visibleCardTransforms.forEach((t) => {
@@ -219,7 +228,7 @@ export default function App() {
                 isFirstLoad.current = false;
               }
             },
-          }
+          },
         );
       });
     } else {
@@ -310,17 +319,28 @@ export default function App() {
     // Find active card from CARDS
     const activeCard = CARDS[activeIndex];
     // Find corresponding tutorial data from state
-    const matchedTutorial = tutorials.find(t => t.title.toLowerCase().includes(activeCard.alt.toLowerCase()) || activeCard.alt.toLowerCase().includes(t.title.toLowerCase()) || (t.id === activeCard.id));
-    
+    const matchedTutorial = tutorials.find(
+      (t) =>
+        t.title.toLowerCase().includes(activeCard.alt.toLowerCase()) ||
+        activeCard.alt.toLowerCase().includes(t.title.toLowerCase()) ||
+        t.id === activeCard.id,
+    );
+
     // Get videos based on language
-    const currentVideos = matchedTutorial ? (language === "en" ? matchedTutorial.videos.en : matchedTutorial.videos.es) : [];
-    
-    // Set first video as active video URL
-    if (currentVideos && currentVideos.length > 0) {
-      setActiveVideoUrl(currentVideos[0]);
-    } else {
-      setActiveVideoUrl("");
+    const currentVideos = matchedTutorial
+      ? language === "en"
+        ? matchedTutorial.videos.en
+        : matchedTutorial.videos.es
+      : [];
+
+    // Check if there are no videos at all for the current card
+    if (!currentVideos || currentVideos.length === 0) {
+      alert("Tutorial videos for this model are not linked yet.");
+      return;
     }
+
+    // Set first video as active video URL
+    setActiveVideoUrl(currentVideos[0]);
 
     setIsDialogOpen(true);
     requestAnimationFrame(() => {
@@ -340,6 +360,66 @@ export default function App() {
       ease: "power2.in",
       onComplete: () => setIsDialogOpen(false),
     });
+  };
+
+  // Handle materials-trigger click:
+  // 1. Scale bounce on .materials and .scale classes
+  // 2. Stagger slide up animation for .skin, .metal, .fabric, .terrain, .leather, .hair (or reverse hide if already visible)
+  const handleMaterialsTriggerClick = () => {
+    // 1. Scale Bounce
+    gsap.fromTo(
+      ".materials, [class*='Scale']",
+      { scale: 1 },
+      {
+        scale: 0.9,
+        x: -30,
+        y: 40,
+        duration: 0.35,
+        ease: "power.out()",
+        yoyo: true,
+        repeat: 1,
+        overwrite: "auto",
+      }
+    );
+
+    const targetClasses = [".skin", ".metal", ".fabric", ".terrain", ".leather", ".hair"];
+    gsap.killTweensOf(targetClasses);
+
+    if (isMaterialsVisible) {
+      // 2. Reverse Stagger (Slide down to hide)
+      // Animated in reverse order (hair down to skin) for a clean visual exit
+      gsap.to([...targetClasses].reverse(), {
+        opacity: 0,
+        y: 120,
+        duration: 0.6,
+        stagger: 0.08,
+        ease: "power2.in",
+        overwrite: "auto",
+        onComplete: () => {
+          setIsMaterialsVisible(false);
+        }
+      });
+    } else {
+      // 2. Stagger Slide up to show
+      gsap.fromTo(
+        targetClasses,
+        {
+          opacity: 0,
+          y: 120,
+        },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          stagger: 0.08,
+          ease: "power2.out",
+          overwrite: "auto",
+          onComplete: () => {
+            setIsMaterialsVisible(true);
+          }
+        }
+      );
+    }
   };
 
   // Close dialog on Escape key
@@ -373,11 +453,11 @@ export default function App() {
         alt=""
       />
       {/* Click zones for switching language / overlay */}
-      <div 
+      <div
         className="absolute left-[38vw] top-[3vw] w-[11vw] h-[3vw] z-30 cursor-pointer"
         onClick={() => setLanguage("en")}
       />
-      <div 
+      <div
         className="absolute left-[50vw] top-[3vw] w-[11vw] h-[3vw] z-30 cursor-pointer"
         onClick={() => setLanguage("es")}
       />
@@ -408,7 +488,41 @@ export default function App() {
       />
       <img
         src="https://cdn.prod.website-files.com/6a02cb170cdbff0075ac40a2/6a2abcd1e65d09068073cb36_2%2C8%20-%20Materials%20-%20English.avif"
-        className="w-full absolute inset-0"
+        className="w-full absolute inset-0 materials"
+        alt=""
+      />
+      <div 
+        className="absolute inset-0 left-[12vw] top-auto h-[6vw] w-[17vw] cursor-pointer z-10 materials-trigger"
+        onClick={handleMaterialsTriggerClick}
+      />
+      <img
+        src="/img/materials/1 - skin - english_converted.avif"
+        className="w-full absolute inset-0 skin"
+        alt=""
+      />
+      <img
+        src="/img/materials/2 - metal - english_converted.avif"
+        className="w-full absolute inset-0 metal"
+        alt=""
+      />
+      <img
+        src="/img/materials/3 - fabric - english_converted.avif"
+        className="w-full absolute inset-0 fabric"
+        alt=""
+      />
+      <img
+        src="/img/materials/4  - terrain - english_converted.avif"
+        className="w-full absolute inset-0 terrain"
+        alt=""
+      />
+      <img
+        src="/img/materials/5 - leather - english_converted.avif"
+        className="w-full absolute inset-0 leather"
+        alt=""
+      />
+      <img
+        src="/img/materials/6 - hair - english_converted.avif"
+        className="w-full absolute inset-0 hair"
         alt=""
       />
       <div className="absolute inset-be-0 bottom-[5.1vw]">
@@ -491,122 +605,147 @@ export default function App() {
       {/* ==========================================
           Selection Dialog Overlay (GSAP animated)
           ========================================== */}
-      {isDialogOpen && (() => {
-        const activeCard = CARDS[activeIndex];
-        const matchedTutorial = tutorials.find(
-          (t) =>
-            t.title.toLowerCase().includes(activeCard.alt.toLowerCase()) ||
-            activeCard.alt.toLowerCase().includes(t.title.toLowerCase()) ||
-            t.id === activeCard.id
-        );
-        const currentVideos = matchedTutorial
-          ? language === "en"
-            ? matchedTutorial.videos.en
-            : matchedTutorial.videos.es
-          : [];
+      {isDialogOpen &&
+        (() => {
+          const activeCard = CARDS[activeIndex];
+          const matchedTutorial = tutorials.find(
+            (t) =>
+              t.title.toLowerCase().includes(activeCard.alt.toLowerCase()) ||
+              activeCard.alt.toLowerCase().includes(t.title.toLowerCase()) ||
+              t.id === activeCard.id,
+          );
+          const currentVideos = matchedTutorial
+            ? language === "en"
+              ? matchedTutorial.videos.en
+              : matchedTutorial.videos.es
+            : [];
 
-        // Main video to show is either activeVideoUrl, or falls back to the first available video
-        const mainVideoSrc = activeVideoUrl || (currentVideos.length > 0 ? currentVideos[0] : "");
-        // Sidebar videos are the other videos (excluding the currently active main video, up to 3)
-        const sidebarVideos = currentVideos.filter(v => v !== mainVideoSrc).slice(0, 3);
+          // Main video to show is either activeVideoUrl, or falls back to the first available video
+          const mainVideoSrc =
+            activeVideoUrl ||
+            (currentVideos.length > 0 ? currentVideos[0] : "");
+          // Sidebar videos are the other videos (excluding the currently active main video, up to 3)
+          const sidebarVideos = currentVideos
+            .filter((v) => v !== mainVideoSrc)
+            .slice(0, 3);
 
-        return (
-          <div
-            className="absolute inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm"
-            onClick={closeDialog}
-          >
+          return (
             <div
-              className="dialog-container relative flex items-center justify-center"
-              onClick={(e) => e.stopPropagation()}
+              className="absolute inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm"
+              onClick={closeDialog}
             >
-              {/* Background dialog */}
-              <div className="relative">
-                <img
-                  src="/img/dialog/3_converted.avif"
-                  alt="dialog"
-                  className="max-w-[90vw] max-h-[90vh] object-contain select-none pointer-events-none"
-                />
-                <div className="absolute inset-0 left-0 top-[7vw] h-[34vw] max-w-[70vw] mx-auto z-10">
-                  <div className="flex gap-6">
-                    {mainVideoSrc ? (
-                      <iframe
-                        title="vimeo-player"
-                        src={`${mainVideoSrc}?autoplay=1`}
-                        className="w-[46.8vw] h-[25.8vw] m-6 rounded-lg"
-                        frameBorder="0"
-                        referrerPolicy="strict-origin-when-cross-origin"
-                        allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
-                        allowFullScreen
-                      />
-                    ) : (
-                      <div className="w-[46.8vw] h-[25.8vw] m-6 rounded-lg bg-zinc-900/80 flex flex-col items-center justify-center text-white border border-zinc-700/50 backdrop-blur-sm font-sans gap-2 p-6 text-center">
-                        <span className="text-[1.8vw] font-bold text-zinc-300">No Videos Linked Yet</span>
-                        <span className="text-[1.1vw] text-zinc-500 max-w-[80%]">Tutorial videos for this model are currently unavailable. Please check back later.</span>
-                      </div>
-                    )}
-                    <div className="w-[15.2vw] h-[25.8vw] m-6 flex flex-col gap-4">
-                      {sidebarVideos.map((videoUrl, idx) => (
-                        <div 
-                          key={videoUrl} 
-                          className="h-[8.4vw] w-full rounded-lg overflow-hidden relative cursor-pointer group border border-zinc-800 hover:border-zinc-500 transition-all duration-300"
-                          onClick={() => setActiveVideoUrl(videoUrl)}
-                        >
-                          {/* We can use vimeo's player in non-autoplay mode for thumbnails or simple overlay */}
-                          <iframe
-                            title={`vimeo-player-sidebar-${idx}`}
-                            src={videoUrl}
-                            className="w-full h-full pointer-events-none"
-                            frameBorder="0"
-                            scrolling="no"
-                          />
-                          <div className="absolute inset-0 bg-black/40 group-hover:bg-black/10 transition-all duration-300 flex items-center justify-center">
-                            <div className="w-[2vw] h-[2vw] rounded-full bg-white/20 group-hover:bg-white/80 group-hover:scale-110 flex items-center justify-center backdrop-blur-sm transition-all duration-300">
-                              <svg className="w-[0.8vw] h-[0.8vw] text-white group-hover:text-black fill-current" viewBox="0 0 24 24">
-                                <path d="M8 5v14l11-7z" />
-                              </svg>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                      {/* Fill empty spaces with placeholder if sidebar videos are less than 3 */}
-                      {sidebarVideos.length === 0 && mainVideoSrc && (
-                        <div className="h-full w-full flex flex-col items-center justify-center text-zinc-500 text-[1.1vw] bg-zinc-950/40 rounded-lg border border-dashed border-zinc-800 p-4 text-center font-sans">
-                          <span>Single Video Tutorial</span>
+              <div
+                className="dialog-container relative flex items-center justify-center"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {/* Background dialog */}
+                <div className="relative">
+                  <img
+                    src="/img/dialog/3_converted.avif"
+                    alt="dialog"
+                    className="max-w-[90vw] max-h-[90vh] object-contain select-none pointer-events-none"
+                  />
+                  <div className="absolute inset-0 left-0 top-[7vw] h-[34vw] max-w-[70vw] mx-auto z-10">
+                    <div className="flex gap-6">
+                      {mainVideoSrc ? (
+                        <iframe
+                          title="vimeo-player"
+                          src={`${mainVideoSrc}?autoplay=1`}
+                          className="w-[46.8vw] h-[25.8vw] m-6 rounded-lg"
+                          frameBorder="0"
+                          referrerPolicy="strict-origin-when-cross-origin"
+                          allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
+                          allowFullScreen
+                        />
+                      ) : (
+                        <div className="w-[46.8vw] h-[25.8vw] m-6 rounded-lg bg-zinc-900/80 flex flex-col items-center justify-center text-white border border-zinc-700/50 backdrop-blur-sm font-sans gap-2 p-6 text-center">
+                          <span className="text-[1.8vw] font-bold text-zinc-300">
+                            No Videos Linked Yet
+                          </span>
+                          <span className="text-[1.1vw] text-zinc-500 max-w-[80%]">
+                            Tutorial videos for this model are currently
+                            unavailable. Please check back later.
+                          </span>
                         </div>
                       )}
+                      <div className="w-[15.2vw] h-[25.8vw] m-6 flex flex-col gap-4">
+                        {sidebarVideos.map((videoUrl, idx) => (
+                          <div
+                            key={videoUrl}
+                            className="h-[8.4vw] w-full rounded-lg overflow-hidden relative cursor-pointer group border border-zinc-800 hover:border-zinc-500 transition-all duration-300"
+                            onClick={() => setActiveVideoUrl(videoUrl)}
+                          >
+                            {/* We can use vimeo's player in non-autoplay mode for thumbnails or simple overlay */}
+                            <iframe
+                              title={`vimeo-player-sidebar-${idx}`}
+                              src={videoUrl}
+                              className="w-full h-full pointer-events-none"
+                              frameBorder="0"
+                              scrolling="no"
+                            />
+                            <div className="absolute inset-0 bg-black/40 group-hover:bg-black/10 transition-all duration-300 flex items-center justify-center">
+                              <div className="w-[2vw] h-[2vw] rounded-full bg-white/20 group-hover:bg-white/80 group-hover:scale-110 flex items-center justify-center backdrop-blur-sm transition-all duration-300">
+                                <svg
+                                  className="w-[0.8vw] h-[0.8vw] text-white group-hover:text-black fill-current"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path d="M8 5v14l11-7z" />
+                                </svg>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                        {/* Fill empty spaces with placeholder if sidebar videos are less than 3 */}
+                        {sidebarVideos.length === 0 && mainVideoSrc && (
+                          <div className="h-full w-full flex flex-col items-center justify-center text-zinc-500 text-[1.1vw] bg-zinc-950/40 rounded-lg border border-dashed border-zinc-800 p-4 text-center font-sans">
+                            <span>Single Video Tutorial</span>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
+                <img
+                  src={
+                    language === "en"
+                      ? "/img/dialog/Button - Subscribe - English_converted.avif"
+                      : "/img/dialog/Button - Subscribe - Spanish_converted.avif"
+                  }
+                  className="absolute inset-0 w-full pointer-events-none"
+                  alt=""
+                />
+                <img
+                  src={
+                    language === "en"
+                      ? "/img/dialog/Button - buy video - English_converted.avif"
+                      : "/img/dialog/Button - buy video - Spanish_converted.avif"
+                  }
+                  className="absolute inset-0 w-full pointer-events-none"
+                  alt=""
+                />
+                <img
+                  src={
+                    language === "en"
+                      ? "/img/dialog/Button - comments - English_converted.avif"
+                      : "/img/dialog/Button - comments - spanish_converted.avif"
+                  }
+                  className="absolute inset-0 w-full pointer-events-none"
+                  alt=""
+                />
+                {/* Close icon */}
+                <img
+                  src="/img/dialog/button - close_converted.avif"
+                  alt="close"
+                  className="absolute top-[3%] right-[3%] w-[58%] hover:brightness-110 transition select-none pointer-events-none"
+                />
+                <div
+                  className="absolute inset-0 left-auto right-12 top-6 h-[3.5vw] w-[3.5vw] cursor-pointer"
+                  onClick={closeDialog}
+                />
               </div>
-              <img
-                src={language === "en" ? "/img/dialog/Button - Subscribe - English_converted.avif" : "/img/dialog/Button - Subscribe - Spanish_converted.avif"}
-                className="absolute inset-0 w-full pointer-events-none"
-                alt=""
-              />
-              <img
-                src={language === "en" ? "/img/dialog/Button - buy video - English_converted.avif" : "/img/dialog/Button - buy video - Spanish_converted.avif"}
-                className="absolute inset-0 w-full pointer-events-none"
-                alt=""
-              />
-              <img
-                src={language === "en" ? "/img/dialog/Button - comments - English_converted.avif" : "/img/dialog/Button - comments - spanish_converted.avif"}
-                className="absolute inset-0 w-full pointer-events-none"
-                alt=""
-              />
-              {/* Close icon */}
-              <img
-                src="/img/dialog/button - close_converted.avif"
-                alt="close"
-                className="absolute top-[3%] right-[3%] w-[58%] hover:brightness-110 transition select-none pointer-events-none"
-              />
-              <div
-                className="absolute inset-0 left-auto right-12 top-6 h-[3.5vw] w-[3.5vw] cursor-pointer"
-                onClick={closeDialog}
-              />
             </div>
-          </div>
-        );
-      })()}
+          );
+        })()}
     </div>
   );
 }
