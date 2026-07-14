@@ -100,8 +100,9 @@ export default function App() {
   const [language, setLanguage] = useState<"en" | "es">("en");
   const [activeVideoUrl, setActiveVideoUrl] = useState<string>("");
   const [isMaterialsVisible, setIsMaterialsVisible] = useState(false);
+  const [isScalesVisible, setIsScalesVisible] = useState(false);
 
-  // Fetch tutorial data from json-server and set initial hidden state for materials
+  // Fetch tutorial data from json-server and set initial hidden state for materials and scales
   useEffect(() => {
     fetch("http://localhost:3001/list-video-tutorials")
       .then((res) => res.json())
@@ -114,6 +115,15 @@ export default function App() {
     gsap.set(".skin, .metal, .fabric, .terrain, .leather, .hair", {
       opacity: 0,
       y: 100,
+    });
+
+    // Hide scales by default on load (moving to the left)
+    // Note: since class names starting with digits like "75mm" need special query selectors, 
+    // we can use document.querySelectorAll or select them by class list. 
+    // In GSAP we can use "." + "75mm" directly if we target them correctly.
+    gsap.set(".bust, .\\37 5mm, .\\35 4mm", {
+      opacity: 0,
+      x: -120,
     });
   }, []);
 
@@ -422,6 +432,65 @@ export default function App() {
     }
   };
 
+  // Handle scales-trigger click:
+  // 1. Scale bounce on .scales and .scale classes
+  // 2. Stagger slide right animation for .bust, .75mm, .54mm (or reverse hide if already visible)
+  const handleScalesTriggerClick = () => {
+    // 1. Scale Bounce
+    gsap.fromTo(
+      ".scales, [class*='Scale']",
+      { scale: 1 },
+      {
+        scale: 0.9,
+        x: -80, // shift slightly right for bounce feedback
+        y: -40,
+        duration: 0.35,
+        ease: "power.out()",
+        yoyo: true,
+        repeat: 1,
+        overwrite: "auto",
+      }
+    );
+
+    const targetClasses = [".bust", ".\\37 5mm", ".\\35 4mm"];
+    gsap.killTweensOf(targetClasses);
+
+    if (isScalesVisible) {
+      // 2. Reverse Stagger (Slide left to hide)
+      gsap.to([...targetClasses].reverse(), {
+        opacity: 0,
+        x: -120,
+        duration: 0.6,
+        stagger: 0.08,
+        ease: "power2.in",
+        overwrite: "auto",
+        onComplete: () => {
+          setIsScalesVisible(false);
+        }
+      });
+    } else {
+      // 2. Stagger Slide right to show
+      gsap.fromTo(
+        targetClasses,
+        {
+          opacity: 0,
+          x: -120,
+        },
+        {
+          opacity: 1,
+          x: 0,
+          duration: 0.8,
+          stagger: 0.08,
+          ease: "power2.out",
+          overwrite: "auto",
+          onComplete: () => {
+            setIsScalesVisible(true);
+          }
+        }
+      );
+    }
+  };
+
   // Close dialog on Escape key
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
@@ -483,7 +552,26 @@ export default function App() {
       />
       <img
         src="https://cdn.prod.website-files.com/6a02cb170cdbff0075ac40a2/6a2abcd1d6145832d03b75a4_2%2C9%20-%20Scale%20-%20English.avif"
-        className="w-full absolute inset-0"
+        className="w-full absolute inset-0 scales"
+        alt=""
+      />
+      <div 
+        className="absolute inset-0 bottom-auto h-[12vw] w-[15vw] cursor-pointer z-10 scales-trigger"
+        onClick={handleScalesTriggerClick}
+      />
+      <img
+        src="/img/scales/1 - busts - English_converted.avif"
+        className="w-full absolute inset-0 bust"
+        alt=""
+      />
+      <img
+        src="/img/scales/2 - more than 75mm - english_converted.avif"
+        className="w-full absolute inset-0 75mm"
+        alt=""
+      />
+      <img
+        src="/img/scales/3 - les than 54mm - english_converted.avif"
+        className="w-full absolute inset-0 54mm"
         alt=""
       />
       <img

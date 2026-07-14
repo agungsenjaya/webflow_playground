@@ -10,7 +10,7 @@
         "hair"
       ],
       "scales": [
-        ">75mm",
+        "75mm",
         "bust"
       ],
       "img": "/img/slider/new/1 - The Last Deflagration_converted.avif",
@@ -28,7 +28,7 @@
         "terrain"
       ],
       "scales": [
-        "<54mm"
+        "54mm"
       ],
       "img": "/img/slider/new/2 - blood angel_converted.avif",
       "videos": {
@@ -96,7 +96,7 @@
         "Terrain"
       ],
       "scales": [
-        "<54mm"
+        "54mm"
       ],
       "img": "/img/slider/new/3 - ultramarine_converted.avif",
       "videos": {
@@ -176,7 +176,7 @@
         "Fabrics"
       ],
       "scales": [
-        "busts"
+        "bust"
       ],
       "img": "/img/slider/new/5 - the witcher_converted.avif",
       "videos": {
@@ -236,7 +236,7 @@
         "Hair"
       ],
       "scales": [
-        "Bust"
+        "bust"
       ],
       "img": "/img/slider/new/6 - Kvothe_converted.avif",
       "videos": {
@@ -272,7 +272,7 @@
         "Skin"
       ],
       "scales": [
-        "Bust"
+        "bust"
       ],
       "img": "/img/slider/new/8 - Mads_converted.avif",
       "videos": {
@@ -295,7 +295,7 @@
         "Hair"
       ],
       "scales": [
-        "Bust"
+        "bust"
       ],
       "img": "/img/slider/new/9 - noko_converted.avif",
       "videos": {
@@ -321,7 +321,7 @@
         "hair"
       ],
       "scales": [
-        "Bust"
+        "bust"
       ],
       "img": "/img/slider/new/10 - carmen_converted.avif",
       "videos": {
@@ -356,7 +356,7 @@
         "Fabrics"
       ],
       "scales": [
-        ">75mm"
+        "75mm"
       ],
       "img": "/img/slider/new/11 - Eldar_converted.avif",
       "videos": {
