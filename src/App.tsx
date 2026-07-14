@@ -25,55 +25,55 @@ const CF_VISIBLE_RIGHT = 3;
 const CARDS: CardData[] = [
   {
     id: 1,
-    src: "/img/slider/4 - eva_converted.avif",
+    src: "/img/slider/new/4 - eva_converted.avif",
     alt: "Eva",
     objectPosition: "center 15%",
   },
   {
     id: 2,
-    src: "/img/slider/2 - blood angel_converted.avif",
+    src: "/img/slider/new/2 - blood angel_converted.avif",
     alt: "Blood Angels",
     objectPosition: "center 15%",
   },
   {
     id: 3,
-    src: "/img/slider/8 - Mads_converted.avif",
+    src: "/img/slider/new/8 - Mads_converted.avif",
     alt: "Mads Mikkelsen",
     objectPosition: "center 15%",
   },
   {
     id: 4,
-    src: "/img/slider/1 - The Last Deflagration_converted.avif",
+    src: "/img/slider/new/1 - The Last Deflagration_converted.avif",
     alt: "The Last Deflagration",
     objectPosition: "center 15%",
   },
   {
     id: 5,
-    src: "/img/slider/2.3 - Protecting my land_converted.avif",
+    src: "/img/slider/new/2.3 - Protecting my land_converted.avif",
     alt: "Protecting My Land",
     objectPosition: "center 15%",
   },
   {
     id: 6,
-    src: "/img/slider/6 - Kvothe_converted.avif",
+    src: "/img/slider/new/6 - Kvothe_converted.avif",
     alt: "Kvothe",
     objectPosition: "center 15%",
   },
   {
     id: 7,
-    src: "/img/slider/3 - ultramarine_converted.avif",
+    src: "/img/slider/new/3 - ultramarine_converted.avif",
     alt: "Ultramarine",
     objectPosition: "center 15%",
   },
-  { id: 8, src: "/img/slider/10 - carmen_converted.avif", alt: "Carmen" },
+  { id: 8, src: "/img/slider/new/10 - carmen_converted.avif", alt: "Carmen" },
   {
     id: 9,
-    src: "/img/slider/5 - the witcher_converted.avif",
+    src: "/img/slider/new/5 - the witcher_converted.avif",
     alt: "The Witcher",
   },
-  { id: 10, src: "/img/slider/6 - akito_converted.avif", alt: "Akito" },
-  { id: 11, src: "/img/slider/9 - noko_converted.avif", alt: "Noko" },
-  { id: 12, src: "/img/slider/11 - Eldar_converted.avif", alt: "Eldar" },
+  { id: 10, src: "/img/slider/new/6 - akito_converted.avif", alt: "Akito" },
+  { id: 11, src: "/img/slider/new/9 - noko_converted.avif", alt: "Noko" },
+  { id: 12, src: "/img/slider/new/11 - Eldar_converted.avif", alt: "Eldar" },
 ];
 
 // ==========================================
@@ -268,6 +268,21 @@ export default function App() {
       />
       <img
         src="https://cdn.prod.website-files.com/6a02cb170cdbff0075ac40a2/6a2abcd0e65d09068073cad7_2%2C3%20-%20arrow%20right.avif"
+        className="w-full absolute inset-0"
+        alt=""
+      />
+      <img
+        src="https://cdn.prod.website-files.com/6a02cb170cdbff0075ac40a2/6a2ac163daa0ae180093a9a6_2%2C7%20-%20new%20videos%20-%20English%20(triggers%20when%20you%20click%20on%20old%20videos).avif"
+        className="w-full absolute inset-0"
+        alt=""
+      />
+      <img
+        src="https://cdn.prod.website-files.com/6a02cb170cdbff0075ac40a2/6a2abcd1d6145832d03b75a4_2%2C9%20-%20Scale%20-%20English.avif"
+        className="w-full absolute inset-0"
+        alt=""
+      />
+      <img
+        src="https://cdn.prod.website-files.com/6a02cb170cdbff0075ac40a2/6a2abcd1e65d09068073cb36_2%2C8%20-%20Materials%20-%20English.avif"
         className="w-full absolute inset-0"
         alt=""
       />
