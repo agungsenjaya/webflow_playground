@@ -86,6 +86,7 @@ export default function App() {
 
   const containerRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const isFirstLoad = useRef(true);
 
   // Drag Gesture States
   const isDragging = useRef(false);
@@ -98,11 +99,8 @@ export default function App() {
     // Calculate radius dynamically in pixels based on viewport width (1000px at 1920px wide)
     const radius = window.innerWidth * 0.87;
 
-    CARDS.forEach((_, i) => {
-      const cardEl = cardRefs.current[i];
-      if (!cardEl) return;
-
-      // Calculate circular shortest path delta
+    // Pre-calculate all positions and attributes
+    const cardTransforms = CARDS.map((_, i) => {
       let diff = i - activeIndex;
       if (diff > length / 2) {
         diff -= length;
@@ -111,7 +109,6 @@ export default function App() {
       }
 
       const absDiff = Math.abs(diff);
-      // Visible when within the per-side window (active counts as the 5th from the left)
       const isVisible =
         diff === 0
           ? true
@@ -119,38 +116,112 @@ export default function App() {
             ? absDiff <= CF_VISIBLE_LEFT
             : absDiff <= CF_VISIBLE_RIGHT;
 
-      // Cards follow a circular arc (like tarot cards fanned on a table).
-      // theta = angle from center along the arc.
       const theta = diff * CF_ANGLE_STEP;
       const x = radius * Math.sin(theta);
-      const y = radius * (1 - Math.cos(theta)); // gentle droop toward edges
-      const rotation = theta * (180 / Math.PI); // tilt to follow arc tangent
+      const y = radius * (1 - Math.cos(theta));
+      const rotation = theta * (180 / Math.PI);
       const scale =
         diff === 0 ? CF_CENTER_SCALE : CF_NEIGHBOR_SCALE - (absDiff - 1) * 0.05;
-      const opacity = isVisible ? 1 : 0; // kartu di luar window disembunyikan
+      const opacity = isVisible ? 1 : 0;
       const zIndex = diff === 0 ? 100 : 90 - absDiff * 10;
 
-      // Fix immediate depth layering + clear any leftover 3D transforms
-      // Disable interaction on hidden cards so they don't block clicks
-      gsap.set(cardEl, {
-        zIndex,
-        pointerEvents: isVisible ? "auto" : "none",
-        rotateY: 0,
-        rotateX: 0,
-        z: 0,
+      return { i, diff, isVisible, x, y, rotation, scale, opacity, zIndex };
+    });
+
+    if (isFirstLoad.current) {
+      // 1. Instantly hide all cards, reset rotations, set z-index
+      cardTransforms.forEach((t) => {
+        const cardEl = cardRefs.current[t.i];
+        if (!cardEl) return;
+        gsap.set(cardEl, {
+          zIndex: t.zIndex,
+          pointerEvents: t.isVisible ? "auto" : "none",
+          rotateY: 0,
+          rotateX: 0,
+          z: 0,
+          opacity: 0,
+        });
       });
 
-      gsap.to(cardEl, {
-        x,
-        y,
-        rotation,
-        scale,
-        opacity,
-        duration: 0.65,
-        ease: "power3.out",
-        overwrite: "auto",
+      // 2. Filter visible cards
+      const visibleCardTransforms = cardTransforms.filter((t) => t.isVisible);
+
+      // We want cards on the outside to fall first, moving inwards, with the center (activeIndex) falling last.
+      // We can calculate the distance/difference in index from the activeIndex.
+      // Maximum distance from activeIndex among visible cards:
+      // Left side goes up to 4 cards away, right side goes up to 3 cards away.
+      // Let's find the absolute diff from activeIndex for each, and invert it so larger distance falls first.
+      const maxDistance = Math.max(...visibleCardTransforms.map(t => Math.abs(t.diff)));
+
+      // 3. For each visible card, animate from above with delay based on distance to center
+      visibleCardTransforms.forEach((t) => {
+        const cardEl = cardRefs.current[t.i];
+        if (!cardEl) return;
+
+        // Distance from center: 0 for active card, 1 for immediate neighbors, etc.
+        const distanceToCenter = Math.abs(t.diff);
+        // Delay is smaller for outer cards, larger for inner cards.
+        // E.g., if maxDistance is 4:
+        // distance 4 -> delay = (4 - 4) * delayStep = 0
+        // distance 3 -> delay = (4 - 3) * delayStep = 0.15
+        // distance 0 (center) -> delay = (4 - 0) * delayStep = 0.6
+        const delayStep = 0.25; // adjust this for the speed of the inward progression
+        const calculatedDelay = (maxDistance - distanceToCenter) * delayStep;
+
+        gsap.fromTo(
+          cardEl,
+          {
+            x: t.x,
+            y: -900,
+            rotation: 0,
+            scale: t.scale,
+            opacity: 1,
+          },
+          {
+            x: t.x,
+            y: t.y,
+            rotation: t.rotation,
+            scale: t.scale,
+            opacity: 1,
+            duration: 2.0,
+            delay: calculatedDelay,
+            ease: "power2.out",
+            overwrite: "auto",
+            onComplete: () => {
+              // Set isFirstLoad to false when the center card (last card) finishes its animation
+              if (t.diff === 0) {
+                isFirstLoad.current = false;
+              }
+            },
+          }
+        );
       });
-    });
+    } else {
+      // Normal carousel updates (drag / arrow navigation)
+      cardTransforms.forEach((t) => {
+        const cardEl = cardRefs.current[t.i];
+        if (!cardEl) return;
+
+        gsap.set(cardEl, {
+          zIndex: t.zIndex,
+          pointerEvents: t.isVisible ? "auto" : "none",
+          rotateY: 0,
+          rotateX: 0,
+          z: 0,
+        });
+
+        gsap.to(cardEl, {
+          x: t.x,
+          y: t.y,
+          rotation: t.rotation,
+          scale: t.scale,
+          opacity: t.opacity,
+          duration: 0.65,
+          ease: "power3.out",
+          overwrite: "auto",
+        });
+      });
+    }
   }, [activeIndex]);
 
   // Update layout when active index changes or window resizes
