@@ -605,6 +605,7 @@ export default function App() {
       />
       <img
         src="https://cdn.prod.website-files.com/6a02cb170cdbff0075ac40a2/6a2abcd1e65d09068073cb36_2%2C8%20-%20Materials%20-%20English.avif"
+        // className="w-full h-full absolute inset-0 object-cover object-bottom materials"
         className="w-full absolute inset-0 materials"
         alt=""
       />
