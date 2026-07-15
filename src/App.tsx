@@ -1,16 +1,9 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import gsap from "gsap";
 
 // ==========================================
 // Card Data & Type Definitions
 // ==========================================
-interface CardData {
-  id: number;
-  src: string;
-  alt: string;
-  objectPosition?: string;
-}
-
 interface VideoTutorial {
   id: number;
   title: string;
@@ -42,60 +35,6 @@ const FLIP_DURATION = 0.5; // seconds for one flip (lower = snappier)
 const FLIP_PERSPECTIVE = 1000; // 3D depth (higher = subtler, lower = dramatic)
 const FLIP_LIFT = -10; // px the card rises mid-flip (gravity arc: up then land)
 
-const CARDS: CardData[] = [
-  {
-    id: 1,
-    src: "/img/slider/new/4 - eva_converted.avif",
-    alt: "Eva",
-    objectPosition: "center 15%",
-  },
-  {
-    id: 2,
-    src: "/img/slider/new/2 - blood angel_converted.avif",
-    alt: "Blood Angels",
-    objectPosition: "center 15%",
-  },
-  {
-    id: 3,
-    src: "/img/slider/new/8 - Mads_converted.avif",
-    alt: "Mads Mikkelsen",
-    objectPosition: "center 15%",
-  },
-  {
-    id: 4,
-    src: "/img/slider/new/1 - The Last Deflagration_converted.avif",
-    alt: "The Last Deflagration",
-    objectPosition: "center 15%",
-  },
-  {
-    id: 5,
-    src: "/img/slider/new/2.3 - Protecting my land_converted.avif",
-    alt: "Protecting My Land",
-    objectPosition: "center 15%",
-  },
-  {
-    id: 6,
-    src: "/img/slider/new/6 - Kvothe_converted.avif",
-    alt: "Kvothe",
-    objectPosition: "center 15%",
-  },
-  {
-    id: 7,
-    src: "/img/slider/new/3 - ultramarine_converted.avif",
-    alt: "Ultramarine",
-    objectPosition: "center 15%",
-  },
-  { id: 8, src: "/img/slider/new/10 - carmen_converted.avif", alt: "Carmen" },
-  {
-    id: 9,
-    src: "/img/slider/new/5 - the witcher_converted.avif",
-    alt: "The Witcher",
-  },
-  { id: 10, src: "/img/slider/new/6 - akito_converted.avif", alt: "Akito" },
-  { id: 11, src: "/img/slider/new/9 - noko_converted.avif", alt: "Noko" },
-  { id: 12, src: "/img/slider/new/11 - Eldar_converted.avif", alt: "Eldar" },
-];
-
 // ==========================================
 // Main App Component
 // ==========================================
@@ -109,6 +48,13 @@ export default function App() {
   const [isMaterialsVisible, setIsMaterialsVisible] = useState(false);
   const [isScalesVisible, setIsScalesVisible] = useState(false);
   const [videoMode, setVideoMode] = useState<"new" | "old">("new");
+
+  // Coverflow data is driven by fetched tutorials filtered by the active category.
+  // Default to 'new'; switching to 'old' via handleSwitchVideosClick refilters this.
+  const cards = useMemo(
+    () => tutorials.filter((t) => t.category === videoMode),
+    [tutorials, videoMode],
+  );
 
   // Fetch tutorial data from json-server and set initial hidden state for materials and scales
   useEffect(() => {
@@ -166,12 +112,13 @@ export default function App() {
 
   // GSAP Coverflow Transform Calculations
   const updateCarouselPositions = useCallback(() => {
-    const length = CARDS.length;
+    const length = cards.length;
+    if (length === 0) return; // data not loaded yet
     // Calculate radius dynamically in pixels based on viewport width (1000px at 1920px wide)
     const radius = window.innerWidth * 0.87;
 
     // Pre-calculate all positions and attributes
-    const cardTransforms = CARDS.map((_, i) => {
+    const cardTransforms = cards.map((_, i) => {
       let diff = i - activeIndex;
       if (diff > length / 2) {
         diff -= length;
@@ -238,7 +185,7 @@ export default function App() {
         // distance 4 -> delay = (4 - 4) * delayStep = 0
         // distance 3 -> delay = (4 - 3) * delayStep = 0.15
         // distance 0 (center) -> delay = (4 - 0) * delayStep = 0.6
-        const delayStep = 0.25; // adjust this for the speed of the inward progression
+        const delayStep = 0.15; // adjust this for the speed of the inward progression
         const calculatedDelay = (maxDistance - distanceToCenter) * delayStep;
 
         gsap.fromTo(
@@ -295,7 +242,7 @@ export default function App() {
         });
       });
     }
-  }, [activeIndex]);
+  }, [activeIndex, cards]);
 
   // Update layout when active index changes or window resizes
   useEffect(() => {
@@ -308,15 +255,15 @@ export default function App() {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "ArrowLeft") {
-        setActiveIndex((prev) => (prev - 1 + CARDS.length) % CARDS.length);
+        setActiveIndex((prev) => (prev - 1 + cards.length) % cards.length);
       } else if (e.key === "ArrowRight") {
-        setActiveIndex((prev) => (prev + 1) % CARDS.length);
+        setActiveIndex((prev) => (prev + 1) % cards.length);
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
+  }, [cards.length]);
 
   // Click handler: centering clicked card
   const handleCardClick = (index: number) => {
@@ -337,11 +284,11 @@ export default function App() {
 
     if (deltaX > dragThreshold) {
       // Swipe Right -> show previous card (looping)
-      setActiveIndex((prev) => (prev - 1 + CARDS.length) % CARDS.length);
+      setActiveIndex((prev) => (prev - 1 + cards.length) % cards.length);
       isDragging.current = false;
     } else if (deltaX < -dragThreshold) {
       // Swipe Left -> show next card (looping)
-      setActiveIndex((prev) => (prev + 1) % CARDS.length);
+      setActiveIndex((prev) => (prev + 1) % cards.length);
       isDragging.current = false;
     }
   };
@@ -354,15 +301,8 @@ export default function App() {
   // Dialog (Modal) Handlers
   // ==========================================
   const openDialog = () => {
-    // Find active card from CARDS
-    const activeCard = CARDS[activeIndex];
-    // Find corresponding tutorial data from state
-    const matchedTutorial = tutorials.find(
-      (t) =>
-        t.title.toLowerCase().includes(activeCard.alt.toLowerCase()) ||
-        activeCard.alt.toLowerCase().includes(t.title.toLowerCase()) ||
-        t.id === activeCard.id,
-    );
+    // The active coverflow card IS the tutorial (data-driven now), so no fuzzy lookup needed.
+    const matchedTutorial = cards[activeIndex];
 
     // Get videos based on language
     const currentVideos = matchedTutorial
@@ -545,11 +485,16 @@ export default function App() {
     // Disable the face we're flipping away from immediately
     gsap.set(hideEl, { pointerEvents: "none" });
 
+    // Swap category immediately — runs the stagger (cards falling from above)
+    // in PARALLEL with the label flip, instead of waiting for it to finish.
+    isFirstLoad.current = true;
+    setActiveIndex(4); // reset to center of the new category
+    setVideoMode(goingToOld ? "old" : "new");
+
     const tl = gsap.timeline({
       overwrite: "auto",
       onComplete: () => {
         gsap.set(showEl, { pointerEvents: "auto" });
-        setVideoMode(goingToOld ? "old" : "new");
       },
     });
 
@@ -622,12 +567,12 @@ export default function App() {
       />
       <img
         src="https://cdn.prod.website-files.com/6a02cb170cdbff0075ac40a2/6a570edb9b368e93ffd8d952_new-videos-english_converted.avif"
-        className="w-[20vw] absolute inset-0 left-auto right-[9vw] new-videos"
+        className="w-[20vw] absolute inset-0 left-auto right-[9vw] old-videos"
         alt=""
       />
       <img
         src="https://cdn.prod.website-files.com/6a02cb170cdbff0075ac40a2/6a570edb973f33068410ce87_old-videos-english_converted.avif"
-        className="w-[20vw] absolute inset-0 left-auto right-[9vw] old-videos"
+        className="w-[20vw] absolute inset-0 left-auto right-[9vw] new-videos"
         alt=""
       />
       <div
@@ -704,7 +649,7 @@ export default function App() {
               className="w-[25%] cursor-pointer"
               onClick={() =>
                 setActiveIndex(
-                  (prev) => (prev - 1 + CARDS.length) % CARDS.length,
+                  (prev) => (prev - 1 + cards.length) % cards.length,
                 )
               }
             />
@@ -712,7 +657,7 @@ export default function App() {
             <div
               className="w-[25%] cursor-pointer"
               onClick={() =>
-                setActiveIndex((prev) => (prev + 1) % CARDS.length)
+                setActiveIndex((prev) => (prev + 1) % cards.length)
               }
             />
           </div>
@@ -739,7 +684,7 @@ export default function App() {
           onTouchMove={(e) => handleDragMove(e.touches[0].clientX)}
           onTouchEnd={handleDragEnd}
         >
-          {CARDS.map((card, index) => {
+          {cards.map((card, index) => {
             const isActive = index === activeIndex;
             return (
               <div
@@ -759,14 +704,10 @@ export default function App() {
                 }}
               >
                 <img
-                  src={card.src}
-                  alt={card.alt}
+                  src={card.img}
+                  alt={card.title}
                   className="w-full h-full object-cover select-none pointer-events-none rounded-lg"
-                  style={
-                    card.objectPosition
-                      ? { objectPosition: card.objectPosition }
-                      : undefined
-                  }
+                  style={{ objectPosition: "center 15%" }}
                 />
               </div>
             );
@@ -779,13 +720,8 @@ export default function App() {
           ========================================== */}
       {isDialogOpen &&
         (() => {
-          const activeCard = CARDS[activeIndex];
-          const matchedTutorial = tutorials.find(
-            (t) =>
-              t.title.toLowerCase().includes(activeCard.alt.toLowerCase()) ||
-              activeCard.alt.toLowerCase().includes(t.title.toLowerCase()) ||
-              t.id === activeCard.id,
-          );
+          // The active coverflow card IS the tutorial — direct lookup, no fuzzy match.
+          const matchedTutorial = cards[activeIndex];
           const currentVideos = matchedTutorial
             ? language === "en"
               ? matchedTutorial.videos.en

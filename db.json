@@ -377,6 +377,231 @@
           "https://player.vimeo.com/video/379244125"
         ]
       }
+    },
+    {
+      "id": 13,
+      "title": "2 - Misericordia",
+      "category": "old",
+      "materials": [
+        "Skin",
+        "Fabrics"
+      ],
+      "scales": [
+        "bust"
+      ],
+      "img": "/img/slider/old/2 - misericordia_converted.avif",
+      "videos": {
+        "en": [],
+        "es": []
+      }
+    },
+    {
+      "id": 14,
+      "title": "3 - Amalia Novena",
+      "category": "old",
+      "materials": [
+        "Skin",
+        "Metal",
+        "Fabrics"
+      ],
+      "scales": [
+        "54mm"
+      ],
+      "img": "/img/slider/old/3 - amalia novena_converted.avif",
+      "videos": {
+        "en": [],
+        "es": []
+      }
+    },
+    {
+      "id": 15,
+      "title": "4 - Nancy",
+      "category": "old",
+      "materials": [
+        "Skin",
+        "Metal",
+        "Fabrics",
+        "Hair"
+      ],
+      "scales": [
+        "bust"
+      ],
+      "img": "/img/slider/old/4 - nancy_converted.avif",
+      "videos": {
+        "en": [],
+        "es": []
+      }
+    },
+    {
+      "id": 16,
+      "title": "5 - The Gatekeeper",
+      "category": "old",
+      "materials": [
+        "Skin",
+        "Metal",
+        "Fabrics",
+        "Terrain"
+      ],
+      "scales": [
+        "54mm"
+      ],
+      "img": "/img/slider/old/5 - the gatekeeper_converted.avif",
+      "videos": {
+        "en": [],
+        "es": []
+      }
+    },
+    {
+      "id": 17,
+      "title": "6 - Sword of Dawn",
+      "category": "old",
+      "materials": [
+        "Skin",
+        "Metal",
+        "Fabrics",
+        "Hair"
+      ],
+      "scales": [
+        "bust"
+      ],
+      "img": "/img/slider/old/6 - sword of dawn_converted.avif",
+      "videos": {
+        "en": [],
+        "es": []
+      }
+    },
+    {
+      "id": 18,
+      "title": "7 - Lena",
+      "category": "old",
+      "materials": [
+        "Skin",
+        "Fabrics",
+        "Terrain",
+        "Leather",
+        "Hair"
+      ],
+      "scales": [
+        "75mm"
+      ],
+      "img": "/img/slider/old/7 - lena_converted.avif",
+      "videos": {
+        "en": [],
+        "es": []
+      }
+    },
+    {
+      "id": 19,
+      "title": "8 - Limbo",
+      "category": "old",
+      "materials": [
+        "Skin",
+        "Metal",
+        "Fabrics"
+      ],
+      "scales": [
+        "54mm"
+      ],
+      "img": "/img/slider/old/8 - limbo_converted.avif",
+      "videos": {
+        "en": [],
+        "es": []
+      }
+    },
+    {
+      "id": 20,
+      "title": "9 - Dafne",
+      "category": "old",
+      "materials": [
+        "Skin",
+        "Metal",
+        "Fabrics",
+        "Hair"
+      ],
+      "scales": [
+        "bust"
+      ],
+      "img": "/img/slider/old/9 - dafne_converted.avif",
+      "videos": {
+        "en": [],
+        "es": []
+      }
+    },
+    {
+      "id": 21,
+      "title": "10 - Back home",
+      "category": "old",
+      "materials": [
+        "Skin",
+        "Fabrics",
+        "Terrain"
+      ],
+      "scales": [
+        "54mm"
+      ],
+      "img": "/img/slider/old/10 - back home_converted.avif",
+      "videos": {
+        "en": [],
+        "es": []
+      }
+    },
+    {
+      "id": 22,
+      "title": "11 - The Old Lady of Bali",
+      "category": "old",
+      "materials": [
+        "Skin",
+        "Fabrics",
+        "Hair"
+      ],
+      "scales": [
+        "bust"
+      ],
+      "img": "/img/slider/old/11 - the old lady of bali_converted.avif",
+      "videos": {
+        "en": [],
+        "es": []
+      }
+    },
+    {
+      "id": 23,
+      "title": "12 - Nalani",
+      "category": "old",
+      "materials": [
+        "Skin",
+        "Metal",
+        "Fabrics",
+        "Leather",
+        "Hair"
+      ],
+      "scales": [
+        "bust"
+      ],
+      "img": "/img/slider/old/12 - nalani_converted.avif",
+      "videos": {
+        "en": [],
+        "es": []
+      }
+    },
+    {
+      "id": 24,
+      "title": "13 - Centaur",
+      "category": "old",
+      "materials": [
+        "Skin",
+        "Metal",
+        "Fabrics",
+        "Terrain",
+        "Hair"
+      ],
+      "scales": [
+        "75mm"
+      ],
+      "img": "/img/slider/old/13 - centaur_converted.avif",
+      "videos": {
+        "en": [],
+        "es": []
+      }
     }
   ]
 }
