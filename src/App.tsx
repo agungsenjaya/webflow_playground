@@ -35,6 +35,10 @@ const FLIP_DURATION = 0.5; // seconds for one flip (lower = snappier)
 const FLIP_PERSPECTIVE = 1000; // 3D depth (higher = subtler, lower = dramatic)
 const FLIP_LIFT = -10; // px the card rises mid-flip (gravity arc: up then land)
 
+// Normalize material names from db.json (inconsistent casing + "Fabrics" vs "fabric").
+// e.g. "Skin" -> "skin", "Fabrics" -> "fabric", "terrain" -> "terrain".
+const normalizeMaterial = (m: string) => m.toLowerCase().replace(/s$/, "");
+
 // ==========================================
 // Main App Component
 // ==========================================
@@ -48,12 +52,23 @@ export default function App() {
   const [isMaterialsVisible, setIsMaterialsVisible] = useState(false);
   const [isScalesVisible, setIsScalesVisible] = useState(false);
   const [videoMode, setVideoMode] = useState<"new" | "old">("new");
+  const [activeMaterial, setActiveMaterial] = useState<string | null>(null);
+  const [activeScale, setActiveScale] = useState<string | null>(null);
 
   // Coverflow data is driven by fetched tutorials filtered by the active category.
   // Default to 'new'; switching to 'old' via handleSwitchVideosClick refilters this.
+  // Optional material and scale filters narrow the list further (toggle each).
   const cards = useMemo(
-    () => tutorials.filter((t) => t.category === videoMode),
-    [tutorials, videoMode],
+    () =>
+      tutorials.filter(
+        (t) =>
+          t.category === videoMode &&
+          (activeMaterial
+            ? t.materials.some((m) => normalizeMaterial(m) === activeMaterial)
+            : true) &&
+          (activeScale ? t.scales.includes(activeScale) : true),
+      ),
+    [tutorials, videoMode, activeMaterial, activeScale],
   );
 
   // Fetch tutorial data from json-server and set initial hidden state for materials and scales
@@ -340,6 +355,25 @@ export default function App() {
     });
   };
 
+  // Handle per-material filter click: toggle the material filter on the coverflow.
+  // Click a material = filter to it; click the same material again = clear (toggle).
+  // Selecting a material clears any active scale filter (mutual exclusion).
+  // Positions update smoothly (no stagger re-trigger).
+  const handleMaterialFilterClick = (material: string) => {
+    setActiveMaterial((prev) => (prev === material ? null : material));
+    setActiveScale(null); // cross-reset: material active -> clear scale filter
+    setActiveIndex(0); // filtered list may be shorter — reset to a valid index
+  };
+
+  // Handle per-scale filter click: toggle the scale filter on the coverflow.
+  // Click a scale = filter to it; click the same scale again = clear (toggle).
+  // Selecting a scale clears any active material filter (mutual exclusion).
+  const handleScaleFilterClick = (scale: string) => {
+    setActiveScale((prev) => (prev === scale ? null : scale));
+    setActiveMaterial(null); // cross-reset: scale active -> clear material filter
+    setActiveIndex(0);
+  };
+
   // Handle materials-trigger click:
   // 1. Scale bounce on .materials and .scale classes
   // 2. Stagger slide up animation for .skin, .metal, .fabric, .terrain, .leather, .hair (or reverse hide if already visible)
@@ -489,6 +523,8 @@ export default function App() {
     // in PARALLEL with the label flip, instead of waiting for it to finish.
     isFirstLoad.current = true;
     setActiveIndex(4); // reset to center of the new category
+    setActiveMaterial(null); // clear material filter so it doesn't carry over
+    setActiveScale(null); // clear scale filter so it doesn't carry over
     setVideoMode(goingToOld ? "old" : "new");
 
     const tl = gsap.timeline({
@@ -599,26 +635,41 @@ export default function App() {
       <img
         src="/img/scales/3 - les than 54mm - english_converted.avif"
         className="w-full absolute inset-0 54mm"
+        style={{
+          marginLeft: activeScale === "54mm" ? "0" : "-1.5vw",
+          transition: "margin-left 0.6s ease-out",
+        }}
         alt=""
       />
       <div
         className="absolute inset-0 top-[16.5vw] h-[10vw] w-[6vw] cursor-pointer z-20 scales-54mm"
+        onClick={() => handleScaleFilterClick("54mm")}
       />
       <img
         src="/img/scales/2 - more than 75mm - english_converted.avif"
         className="w-full absolute inset-0 75mm"
+        style={{
+          marginLeft: activeScale === "75mm" ? "0" : "-1.5vw",
+          transition: "margin-left 0.6s ease-out",
+        }}
         alt=""
       />
       <div
         className="absolute inset-0 top-[22.3vw] h-[9vw] w-[6vw] cursor-pointer z-20 scales-75mm"
+        onClick={() => handleScaleFilterClick("75mm")}
       />
       <img
         src="/img/scales/1 - busts - English_converted.avif"
         className="w-full absolute inset-0 bust"
+        style={{
+          marginLeft: activeScale === "bust" ? "0" : "-1.5vw",
+          transition: "margin-left 0.6s ease-out",
+        }}
         alt=""
       />
       <div
         className="absolute inset-0 top-[29vw] h-[9vw] w-[6vw] cursor-pointer z-20 scales-bust"
+        onClick={() => handleScaleFilterClick("bust")}
       />
       <img
         src="https://cdn.prod.website-files.com/6a02cb170cdbff0075ac40a2/6a2abcd1e65d09068073cb36_2%2C8%20-%20Materials%20-%20English.avif"
@@ -632,40 +683,88 @@ export default function App() {
       />
       <img
         src="/img/materials/1 - skin - english_converted.avif"
-        className="w-full absolute inset-0 skin"
+        className="w-full h-full absolute inset-0 object-cover skin"
+        style={{
+          objectPosition: activeMaterial === "skin" ? "center 60%" : "center 10%",
+
+          transition: "object-position 0.6s ease-out",
+        }}
         alt=""
       />
-      <div className="absolute inset-be-0 me-[27vw] h-[4.5vw] w-[9vw] materials-skin cursor-pointer z-20" />
+      <div
+        className="absolute inset-be-0 me-[27vw] h-[4.5vw] w-[9vw] materials-skin cursor-pointer z-20"
+        onClick={() => handleMaterialFilterClick("skin")}
+      />
       <img
         src="/img/materials/2 - metal - english_converted.avif"
-        className="w-full absolute inset-0 metal"
+        className="w-full h-full absolute inset-0 object-cover metal"
+        style={{
+          objectPosition: activeMaterial === "metal" ? "center 60%" : "center 10%",
+
+          transition: "object-position 0.6s ease-out",
+        }}
         alt=""
       />
-      <div className="absolute inset-be-0 me-[15vw] h-[4.5vw] w-[9vw] materials-metal cursor-pointer z-20" />
+      <div
+        className="absolute inset-be-0 me-[15vw] h-[4.5vw] w-[9vw] materials-metal cursor-pointer z-20"
+        onClick={() => handleMaterialFilterClick("metal")}
+      />
       <img
         src="/img/materials/3 - fabric - english_converted.avif"
-        className="w-full absolute inset-0 fabric"
+        className="w-full h-full absolute inset-0 object-cover fabric"
+        style={{
+          objectPosition: activeMaterial === "fabric" ? "center 60%" : "center 10%",
+
+          transition: "object-position 0.6s ease-out",
+        }}
         alt=""
       />
-      <div className="absolute inset-be-0 me-[3.2vw] h-[4.5vw] w-[9vw] materials-fabric cursor-pointer z-20" />
+      <div
+        className="absolute inset-be-0 me-[3.2vw] h-[4.5vw] w-[9vw] materials-fabric cursor-pointer z-20"
+        onClick={() => handleMaterialFilterClick("fabric")}
+      />
       <img
         src="/img/materials/4  - terrain - english_converted.avif"
-        className="w-full absolute inset-0 terrain"
+        className="w-full h-full absolute inset-0 object-cover terrain"
+        style={{
+          objectPosition: activeMaterial === "terrain" ? "center 60%" : "center 10%",
+
+          transition: "object-position 0.6s ease-out",
+        }}
         alt=""
       />
-      <div className="absolute inset-be-0 ms-[7.2vw] h-[4.5vw] w-[9vw] materials-terrain cursor-pointer z-20" />
+      <div
+        className="absolute inset-be-0 ms-[7.2vw] h-[4.5vw] w-[9vw] materials-terrain cursor-pointer z-20"
+        onClick={() => handleMaterialFilterClick("terrain")}
+      />
       <img
         src="/img/materials/5 - leather - english_converted.avif"
-        className="w-full absolute inset-0 leather"
+        className="w-full h-full absolute inset-0 object-cover leather"
+        style={{
+          objectPosition: activeMaterial === "leather" ? "center 60%" : "center 2%",
+
+          transition: "object-position 0.6s ease-out",
+        }}
         alt=""
       />
-      <div className="absolute inset-be-0 ms-[20.8vw] h-[4.5vw] w-[9vw] materials-leather cursor-pointer z-20" />
+      <div
+        className="absolute inset-be-0 ms-[20.8vw] h-[4.5vw] w-[9vw] materials-leather cursor-pointer z-20"
+        onClick={() => handleMaterialFilterClick("leather")}
+      />
       <img
         src="/img/materials/6 - hair - english_converted.avif"
-        className="w-full absolute inset-0 hair"
+        className="w-full h-full absolute inset-0 object-cover hair"
+        style={{
+          objectPosition: activeMaterial === "hair" ? "center 60%" : "center 10%",
+
+          transition: "object-position 0.6s ease-out",
+        }}
         alt=""
       />
-      <div className="absolute inset-be-0 ms-[31.8vw] h-[4.5vw] w-[9vw] materials-hair cursor-pointer z-20" />
+      <div
+        className="absolute inset-be-0 ms-[31.8vw] h-[4.5vw] w-[9vw] materials-hair cursor-pointer z-20"
+        onClick={() => handleMaterialFilterClick("hair")}
+      />
       <div className="absolute inset-be-0 bottom-[5.1vw]">
         <div className="ml-[1.2vw] w-[15vw]">
           <div className="h-[4.4vw] w-full z-20 relative flex">
