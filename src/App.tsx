@@ -505,8 +505,16 @@ export default function App() {
       0,
     );
     // Gravity arc: rise decelerates, fall accelerates — peak at the midpoint
-    tl.to(".new-videos, .old-videos", { y: FLIP_LIFT, duration: half, ease: "power2.out" }, 0);
-    tl.to(".new-videos, .old-videos", { y: 0, duration: half, ease: "power2.in" }, half);
+    tl.to(
+      ".new-videos, .old-videos",
+      { y: FLIP_LIFT, duration: half, ease: "power2.out" },
+      0,
+    );
+    tl.to(
+      ".new-videos, .old-videos",
+      { y: 0, duration: half, ease: "power2.in" },
+      half,
+    );
   };
 
   // Close dialog on Escape key
@@ -589,19 +597,28 @@ export default function App() {
         onClick={handleScalesTriggerClick}
       />
       <img
-        src="/img/scales/1 - busts - English_converted.avif"
-        className="w-full absolute inset-0 bust"
+        src="/img/scales/3 - les than 54mm - english_converted.avif"
+        className="w-full absolute inset-0 54mm"
         alt=""
+      />
+      <div
+        className="absolute inset-0 top-[16.5vw] h-[10vw] w-[6vw] cursor-pointer z-20 scales-54mm"
       />
       <img
         src="/img/scales/2 - more than 75mm - english_converted.avif"
         className="w-full absolute inset-0 75mm"
         alt=""
       />
+      <div
+        className="absolute inset-0 top-[22.3vw] h-[9vw] w-[6vw] cursor-pointer z-20 scales-75mm"
+      />
       <img
-        src="/img/scales/3 - les than 54mm - english_converted.avif"
-        className="w-full absolute inset-0 54mm"
+        src="/img/scales/1 - busts - English_converted.avif"
+        className="w-full absolute inset-0 bust"
         alt=""
+      />
+      <div
+        className="absolute inset-0 top-[29vw] h-[9vw] w-[6vw] cursor-pointer z-20 scales-bust"
       />
       <img
         src="https://cdn.prod.website-files.com/6a02cb170cdbff0075ac40a2/6a2abcd1e65d09068073cb36_2%2C8%20-%20Materials%20-%20English.avif"
@@ -618,37 +635,37 @@ export default function App() {
         className="w-full absolute inset-0 skin"
         alt=""
       />
-      <div className="absolute inset-be-0 me-[27vw] h-[4.5vw] w-[9vw] materials-skin cursor-pointer z-20"/>
+      <div className="absolute inset-be-0 me-[27vw] h-[4.5vw] w-[9vw] materials-skin cursor-pointer z-20" />
       <img
         src="/img/materials/2 - metal - english_converted.avif"
         className="w-full absolute inset-0 metal"
         alt=""
       />
-      <div className="absolute inset-be-0 me-[15vw] h-[4.5vw] w-[9vw] materials-metal cursor-pointer z-20"/>
+      <div className="absolute inset-be-0 me-[15vw] h-[4.5vw] w-[9vw] materials-metal cursor-pointer z-20" />
       <img
         src="/img/materials/3 - fabric - english_converted.avif"
         className="w-full absolute inset-0 fabric"
         alt=""
       />
-      <div className="absolute inset-be-0 me-[3.2vw] h-[4.5vw] w-[9vw] materials-fabric cursor-pointer z-20"/>
+      <div className="absolute inset-be-0 me-[3.2vw] h-[4.5vw] w-[9vw] materials-fabric cursor-pointer z-20" />
       <img
         src="/img/materials/4  - terrain - english_converted.avif"
         className="w-full absolute inset-0 terrain"
         alt=""
       />
-      <div className="absolute inset-be-0 ms-[7.2vw] h-[4.5vw] w-[9vw] materials-terrain cursor-pointer z-20"/>
+      <div className="absolute inset-be-0 ms-[7.2vw] h-[4.5vw] w-[9vw] materials-terrain cursor-pointer z-20" />
       <img
         src="/img/materials/5 - leather - english_converted.avif"
         className="w-full absolute inset-0 leather"
         alt=""
       />
-      <div className="absolute inset-be-0 ms-[20.8vw] h-[4.5vw] w-[9vw] materials-leather cursor-pointer z-20"/>
+      <div className="absolute inset-be-0 ms-[20.8vw] h-[4.5vw] w-[9vw] materials-leather cursor-pointer z-20" />
       <img
         src="/img/materials/6 - hair - english_converted.avif"
         className="w-full absolute inset-0 hair"
         alt=""
       />
-      <div className="absolute inset-be-0 ms-[31.8vw] h-[4.5vw] w-[9vw] materials-hair cursor-pointer z-20"/>
+      <div className="absolute inset-be-0 ms-[31.8vw] h-[4.5vw] w-[9vw] materials-hair cursor-pointer z-20" />
       <div className="absolute inset-be-0 bottom-[5.1vw]">
         <div className="ml-[1.2vw] w-[15vw]">
           <div className="h-[4.4vw] w-full z-20 relative flex">
