@@ -618,31 +618,37 @@ export default function App() {
         className="w-full absolute inset-0 skin"
         alt=""
       />
+      <div className="absolute inset-be-0 me-[27vw] h-[4.5vw] w-[9vw] materials-skin cursor-pointer z-20"/>
       <img
         src="/img/materials/2 - metal - english_converted.avif"
         className="w-full absolute inset-0 metal"
         alt=""
       />
+      <div className="absolute inset-be-0 me-[15vw] h-[4.5vw] w-[9vw] materials-metal cursor-pointer z-20"/>
       <img
         src="/img/materials/3 - fabric - english_converted.avif"
         className="w-full absolute inset-0 fabric"
         alt=""
       />
+      <div className="absolute inset-be-0 me-[3.2vw] h-[4.5vw] w-[9vw] materials-fabric cursor-pointer z-20"/>
       <img
         src="/img/materials/4  - terrain - english_converted.avif"
         className="w-full absolute inset-0 terrain"
         alt=""
       />
+      <div className="absolute inset-be-0 ms-[7.2vw] h-[4.5vw] w-[9vw] materials-terrain cursor-pointer z-20"/>
       <img
         src="/img/materials/5 - leather - english_converted.avif"
         className="w-full absolute inset-0 leather"
         alt=""
       />
+      <div className="absolute inset-be-0 ms-[20.8vw] h-[4.5vw] w-[9vw] materials-leather cursor-pointer z-20"/>
       <img
         src="/img/materials/6 - hair - english_converted.avif"
         className="w-full absolute inset-0 hair"
         alt=""
       />
+      <div className="absolute inset-be-0 ms-[31.8vw] h-[4.5vw] w-[9vw] materials-hair cursor-pointer z-20"/>
       <div className="absolute inset-be-0 bottom-[5.1vw]">
         <div className="ml-[1.2vw] w-[15vw]">
           <div className="h-[4.4vw] w-full z-20 relative flex">
