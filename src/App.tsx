@@ -526,6 +526,7 @@ export default function App() {
         rotateY: 180,
         opacity: 0,
         duration: 2,
+        x: 20,
         ease: "power2.out",
         overwrite: "auto",
         onStart: () => {
