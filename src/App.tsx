@@ -35,6 +35,13 @@ const CF_NEIGHBOR_SCALE = 0.92; // first neighbor baseline scale
 const CF_VISIBLE_LEFT = 4;
 const CF_VISIBLE_RIGHT = 3;
 
+// ==========================================
+// Video panel flip constants — 3D card flip between New/Old videos
+// ==========================================
+const FLIP_DURATION = 0.5; // seconds for one flip (lower = snappier)
+const FLIP_PERSPECTIVE = 1000; // 3D depth (higher = subtler, lower = dramatic)
+const FLIP_LIFT = -10; // px the card rises mid-flip (gravity arc: up then land)
+
 const CARDS: CardData[] = [
   {
     id: 1,
@@ -124,21 +131,25 @@ export default function App() {
       x: -120,
     });
 
-    // Setup 3D flip starting states for new/old videos panels
-    // Set perspective on the parent window or body container to enable 3D depth
+    // Setup 3D flip starting states for new/old videos panels.
+    // Both panels are stacked in the same place. The flip relies on
+    // backfaceVisibility:hidden so each face only shows when facing the viewer.
+    // transformPerspective gives each panel its own 3D depth (no parent perspective needed).
     gsap.set(".new-videos, .old-videos", {
       backfaceVisibility: "hidden",
       transformStyle: "preserve-3d",
+      transformOrigin: "center center",
+      transformPerspective: FLIP_PERSPECTIVE,
     });
 
+    // Old videos start facing away (rotated 180deg) so its back is hidden
     gsap.set(".old-videos", {
-      opacity: 0,
-      rotateY: -180,
+      rotateY: 180,
       pointerEvents: "none",
     });
 
+    // New videos face the viewer
     gsap.set(".new-videos", {
-      opacity: 1,
       rotateY: 0,
       pointerEvents: "auto",
     });
@@ -516,74 +527,41 @@ export default function App() {
   };
 
   // Handle switch-videos-trigger click:
-  // 3D card flip effect between .new-videos and .old-videos
+  // 3D card flip effect between .new-videos and .old-videos.
+  // Both faces are stacked at the same position and rotate together by 180deg.
+  // backfaceVisibility:hidden hides the face pointing away, so the swap looks
+  // like a single card flipping — no opacity cross-fade needed.
+  // The lift uses a gravity arc: decelerate on the way up, accelerate on the
+  // way down, peaking at the midpoint (when the card is edge-on at 90deg).
   const handleSwitchVideosClick = () => {
     gsap.killTweensOf(".new-videos, .old-videos");
 
-    if (videoMode === "new") {
-      // Flip New Videos out (rotate to 180deg)
-      gsap.to(".new-videos", {
-        rotateY: 180,
-        opacity: 0,
-        duration: 2,
-        x: 20,
-        ease: "power2.out",
-        overwrite: "auto",
-        onStart: () => {
-          gsap.set(".new-videos", { pointerEvents: "none" });
-        },
-      });
+    const goingToOld = videoMode === "new";
+    const dir = goingToOld ? "+=180" : "-=180";
+    const hideEl = goingToOld ? ".new-videos" : ".old-videos";
+    const showEl = goingToOld ? ".old-videos" : ".new-videos";
+    const half = FLIP_DURATION / 2;
 
-      // Flip Old Videos in (rotate from -180deg to 0deg)
-      gsap.fromTo(
-        ".old-videos",
-        { rotateY: -180, opacity: 0 },
-        {
-          rotateY: 0,
-          opacity: 1,
-          duration: 2,
-          ease: "power2.out",
-          overwrite: "auto",
-          onStart: () => {
-            gsap.set(".old-videos", { pointerEvents: "auto" });
-          },
-          onComplete: () => {
-            setVideoMode("old");
-          },
-        },
-      );
-    } else {
-      // Flip Old Videos out (rotate to -180deg)
-      gsap.to(".old-videos", {
-        rotateY: -180,
-        opacity: 0,
-        duration: 2,
-        ease: "power2.out",
-        overwrite: "auto",
-        onStart: () => {
-          gsap.set(".old-videos", { pointerEvents: "none" });
-        },
-      });
+    // Disable the face we're flipping away from immediately
+    gsap.set(hideEl, { pointerEvents: "none" });
 
-      // Flip New Videos in (rotate from 180deg to 0deg)
-      gsap.fromTo(
-        ".new-videos",
-        { rotateY: 180, opacity: 0 },
-        {
-          rotateY: 0,
-          opacity: 1,
-          duration: 2,
-          ease: "power2.out",
-          overwrite: "auto",
-          onStart: () => {
-            gsap.set(".new-videos", { pointerEvents: "auto" });
-          },
-          onComplete: () => {
-            setVideoMode("new");
-          },
-        },
-      );
-    }
+    const tl = gsap.timeline({
+      overwrite: "auto",
+      onComplete: () => {
+        gsap.set(showEl, { pointerEvents: "auto" });
+        setVideoMode(goingToOld ? "old" : "new");
+      },
+    });
+
+    // Continuous rotation across the whole flip
+    tl.to(
+      ".new-videos, .old-videos",
+      { rotateY: dir, duration: FLIP_DURATION, ease: "power2.inOut" },
+      0,
+    );
+    // Gravity arc: rise decelerates, fall accelerates — peak at the midpoint
+    tl.to(".new-videos, .old-videos", { y: FLIP_LIFT, duration: half, ease: "power2.out" }, 0);
+    tl.to(".new-videos, .old-videos", { y: 0, duration: half, ease: "power2.in" }, half);
   };
 
   // Close dialog on Escape key
@@ -643,13 +621,13 @@ export default function App() {
         alt=""
       />
       <img
-        src="https://cdn.prod.website-files.com/6a02cb170cdbff0075ac40a2/6a2ac163daa0ae180093a9a6_2%2C7%20-%20new%20videos%20-%20English%20(triggers%20when%20you%20click%20on%20old%20videos).avif"
-        className="w-full absolute inset-0 new-videos"
+        src="https://cdn.prod.website-files.com/6a02cb170cdbff0075ac40a2/6a570edb9b368e93ffd8d952_new-videos-english_converted.avif"
+        className="w-[20vw] absolute inset-0 left-auto right-[9vw] new-videos"
         alt=""
       />
       <img
-        src="https://cdn.prod.website-files.com/6a02cb170cdbff0075ac40a2/6a5653ba46bd47cbec71f409_2%2C6%20-%20old.v%20-%20English_converted.avif"
-        className="w-full absolute inset-0 old-videos"
+        src="https://cdn.prod.website-files.com/6a02cb170cdbff0075ac40a2/6a570edb973f33068410ce87_old-videos-english_converted.avif"
+        className="w-[20vw] absolute inset-0 left-auto right-[9vw] old-videos"
         alt=""
       />
       <div
