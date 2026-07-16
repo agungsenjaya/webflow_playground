@@ -39,6 +39,12 @@ const FLIP_LIFT = -10; // px the card rises mid-flip (gravity arc: up then land)
 // e.g. "Skin" -> "skin", "Fabrics" -> "fabric", "terrain" -> "terrain".
 const normalizeMaterial = (m: string) => m.toLowerCase().replace(/s$/, "");
 
+// Append an autoplay query param to a Vimeo URL safely, regardless of whether
+// the URL already has existing query params (e.g. ?title=0&byline=0...).
+// Avoids producing a double "?" which browsers would silently ignore.
+const withAutoplay = (url: string) =>
+  url.includes("?") ? `${url}&autoplay=1` : `${url}?autoplay=1`;
+
 // ==========================================
 // Main App Component
 // ==========================================
@@ -54,6 +60,10 @@ export default function App() {
   const [videoMode, setVideoMode] = useState<"new" | "old">("new");
   const [activeMaterial, setActiveMaterial] = useState<string | null>(null);
   const [activeScale, setActiveScale] = useState<string | null>(null);
+  const [videoOffset, setVideoOffset] = useState(0); // sidebar video window start index
+
+  // Max number of sidebar thumbnails shown at once
+  const SIDEBAR_MAX = 3;
 
   // Coverflow data is driven by fetched tutorials filtered by the active category.
   // Default to 'new'; switching to 'old' via handleSwitchVideosClick refilters this.
@@ -119,6 +129,7 @@ export default function App() {
   const containerRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
   const isFirstLoad = useRef(true);
+  const sidebarRef = useRef<HTMLDivElement>(null);
 
   // Drag Gesture States
   const isDragging = useRef(false);
@@ -553,6 +564,21 @@ export default function App() {
     );
   };
 
+  // Sidebar video navigation: shift the 3-item window by 1 video at a time,
+  // stopping at the ends (no wrap-around). maxOffset is provided by the dialog IIFE.
+  const handleVideoNavUp = () => {
+    setVideoOffset((prev) => Math.max(0, prev - 1));
+  };
+
+  const handleVideoNavDown = (maxOffset: number) => {
+    setVideoOffset((prev) => Math.min(maxOffset, prev + 1));
+  };
+
+  // Reset sidebar offset when dialog opens or activeIndex changes
+  useEffect(() => {
+    if (isDialogOpen) setVideoOffset(0);
+  }, [isDialogOpen, activeIndex]);
+
   // Close dialog on Escape key
 
   // Close dialog on Escape key
@@ -855,10 +881,16 @@ export default function App() {
           const mainVideoSrc =
             activeVideoUrl ||
             (currentVideos.length > 0 ? currentVideos[0] : "");
-          // Sidebar videos are the other videos (excluding the currently active main video, up to 3)
-          const sidebarVideos = currentVideos
-            .filter((v) => v !== mainVideoSrc)
-            .slice(0, 3);
+          // Sidebar videos are the other videos (excluding the currently active main video),
+          // shown as a sliding window of SIDEBAR_MAX (3) at a time.
+          const allSidebarVideos = currentVideos.filter((v) => v !== mainVideoSrc);
+          const maxOffset = Math.max(0, allSidebarVideos.length - SIDEBAR_MAX);
+          // Clamp offset in case the list shrank (e.g. main video changed)
+          const safeOffset = Math.min(videoOffset, maxOffset);
+          const sidebarVideos = allSidebarVideos.slice(
+            safeOffset,
+            safeOffset + SIDEBAR_MAX,
+          );
 
           return (
             <div
@@ -876,12 +908,30 @@ export default function App() {
                     alt="dialog"
                     className="max-w-[90vw] max-h-[90vh] object-contain select-none pointer-events-none"
                   />
+                  <img
+                    src="/img/dialog/arrow up_converted.avif"
+                    alt="dialog"
+                    className="absolute inset-0"
+                  />
+                  <div
+                    className={`absolute inset-0 left-auto right-[16vw] top-[5.5vw] h-[5vh] w-[5vh] cursor-pointer z-20 navigation-top transition-opacity duration-300 ${safeOffset === 0 ? "opacity-30 pointer-events-none" : ""}`}
+                    onClick={handleVideoNavUp}
+                  />
+                  <img
+                    src="/img/dialog/arrow down_converted.avif"
+                    alt="dialog"
+                    className="absolute inset-0"
+                  />
+                  <div
+                    className={`absolute inset-0 left-auto right-[15.3vw] top-auto bottom-[10.5vw] h-[5vh] w-[5vh] cursor-pointer z-20 navigation-bottom transition-opacity duration-300 ${safeOffset >= maxOffset ? "opacity-30 pointer-events-none" : ""}`}
+                    onClick={() => handleVideoNavDown(maxOffset)}
+                  />
                   <div className="absolute inset-0 left-0 top-[7vw] h-[34vw] max-w-[70vw] mx-auto z-10">
                     <div className="flex gap-6">
                       {mainVideoSrc ? (
                         <iframe
                           title="vimeo-player"
-                          src={`${mainVideoSrc}?autoplay=1`}
+                          src={withAutoplay(mainVideoSrc)}
                           className="w-[46.8vw] h-[25.8vw] m-6 rounded-lg"
                           frameBorder="0"
                           referrerPolicy="strict-origin-when-cross-origin"
@@ -899,7 +949,10 @@ export default function App() {
                           </span>
                         </div>
                       )}
-                      <div className="w-[15.2vw] h-[25.8vw] m-6 flex flex-col gap-4">
+                      <div
+                        ref={sidebarRef}
+                        className="w-[15.2vw] h-[25.8vw] m-6 flex flex-col gap-4"
+                      >
                         {sidebarVideos.map((videoUrl, idx) => (
                           <div
                             key={videoUrl}
@@ -965,12 +1018,12 @@ export default function App() {
                 />
                 {/* Close icon */}
                 <img
-                  src="/img/dialog/button - close_converted.avif"
+                  src="/img/dialog/close X - button_converted.avif"
                   alt="close"
-                  className="absolute top-[3%] right-[3%] w-[58%] hover:brightness-110 transition select-none pointer-events-none"
+                  className="absolute top-[5%] right-[3%] w-[70%] hover:brightness-110 transition select-none pointer-events-none"
                 />
                 <div
-                  className="absolute inset-0 left-auto right-12 top-6 h-[3.5vw] w-[3.5vw] cursor-pointer"
+                  className="absolute inset-0 left-auto right-[7%] top-[12%] h-[3.2vw] w-[3.2vw] cursor-pointer"
                   onClick={closeDialog}
                 />
               </div>
