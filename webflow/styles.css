@@ -164,12 +164,12 @@ html, body {
 /* Horizontal placement mirroring App.tsx:
    - me-[X] zones (skin/metal/fabric) anchored from the right edge.
    - ms-[X] zones (terrain/leather/hair) anchored from the left edge. */
-.materials-skin     { right: 27vw;  left: auto; }
-.materials-metal    { right: 15vw;  left: auto; }
-.materials-fabric   { right: 3.2vw; left: auto; }
-.materials-terrain  { left: 7.2vw;  right: auto; }
-.materials-leather  { left: 20.8vw; right: auto; }
-.materials-hair     { left: 31.8vw; right: auto; }
+.materials-skin     { left: 31.5vw;  right: auto; }
+.materials-metal    { left: 38vw;  right: auto; }
+.materials-fabric   { left: 43.8vw; right: auto; }
+.materials-terrain  { right: 41.8vw;  left: auto; }
+.materials-leather  { right: 35.4vw; left: auto; }
+.materials-hair     { right: 29.7vw; left: auto; }
 
 /* Trigger zone also pinned to viewport for the same reason. */
 .materials-trigger {
