@@ -1,0 +1,204 @@
+<!--
+  template.html — Reference DOM skeleton for the Webflow page.
+  Plain CSS only (no Tailwind). Class names are semantic and map 1:1 to the
+  rules in styles.css. embed.js selects elements by these class names.
+
+  How to use:
+    - Recreate each block below in the Webflow Designer as Div/Image elements
+      and assign the EXACT class names shown.
+    - Load styles.css in Page Settings → Custom Code (Before </head> or as
+      <link> to an uploaded-in-Assets copy).
+    - Background / button / arrow images are referenced as placeholders
+      (BG_1, DIALOG_BG, etc.) — replace with your Webflow asset URLs.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Webflow reference skeleton</title>
+  <link rel="stylesheet" href="./styles.css" />
+  <!-- GSAP (required by embed.js) -->
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+</head>
+<body>
+
+  <!-- Main page wrapper -->
+  <div class="page-shell">
+
+    <!-- ============================================================
+         1) HIDDEN COLLECTION LIST — data source only.
+            Each item embeds a <script> that pushes to window.tutorialsData[].
+         ============================================================ -->
+    <!-- In Webflow: add a Collection List → bind to "list-video-tutorials",
+         assign the wrapper class "cms-data-source" (hidden via CSS). -->
+    <div class="cms-data-source">
+      <!-- Collection Item template. Inside it, an HTML Embed widget: -->
+      <!--
+        <script>
+        window.tutorialsData = window.tutorialsData || [];
+        const clean = (s) => (s || "").toString().replace(/^\[+|\]+$/g, "").trim();
+        const cleanList = (s, opts) => {
+          let v = clean(s);
+          if (opts && opts.lower) v = v.toLowerCase();
+          return v.split(/[,;]/).map(x => x.trim()).map(opts && opts.normalize || (x => x)).filter(Boolean);
+        };
+        window.tutorialsData.push({
+          title: clean(`[T Name]`),
+          category: clean(`[T Category]`),
+          materials: cleanList(`[T Materials]`, { lower: true, normalize: m => m.replace(/s$/, ``) }),
+          scales: cleanList(`[T Scales]`),
+          img: clean(`[T Image]`),
+          videos: {
+            en: cleanList(`[T Videos EN]`),
+            es: cleanList(`[T Videos ES]`)
+          }
+        });
+        </script>
+      -->
+    </div>
+
+    <!-- ============================================================
+         2) BACKGROUND IMAGE LAYERS (App.tsx lines 595-613)
+         ============================================================ -->
+    <img src="BG_1" class="full-width" alt="" />
+    <img src="BG_2" class="full-absolute" alt="" />
+    <img src="BG_LANGUAGE" class="full-absolute" alt="" />
+
+    <!-- Select label + nav arrows (App.tsx lines 623-637) -->
+    <img src="BG_SELECT" class="full-absolute" alt="" />
+    <img src="ARROW_LEFT" class="full-absolute" alt="" />
+    <img src="ARROW_RIGHT" class="full-absolute" alt="" />
+
+    <!-- ============================================================
+         3) NEW / OLD VIDEO LABELS — 3D FLIP (App.tsx lines 638-651)
+            These two images stack at the same position and flip together.
+            NOTE: App.tsx assigns the "old-videos" class to the NEW label
+            image and vice versa — replicate that quirk exactly.
+         ============================================================ -->
+    <img src="NEW_VIDEOS_LABEL" class="video-label old-videos" alt="" />
+    <img src="OLD_VIDEOS_LABEL" class="video-label new-videos" alt="" />
+    <div class="switch-videos-trigger"></div>
+
+    <!-- ============================================================
+         4) SCALES PANEL (App.tsx lines 652-699)
+         ============================================================ -->
+    <img src="SCALES_LABEL" class="full-absolute scales" alt="" />
+    <div class="scales-trigger"></div>
+
+    <!-- Markers: class "scale-marker" + the specific scale class (scale-54mm/scale-75mm/scale-bust).
+         Letter-leading names avoid CSS-escape fragility (digit-leading like "54mm"
+         breaks some selector engines). embed.js matches these class names. -->
+    <img src="SCALE_54MM" class="scale-marker scale-54mm" alt="" />
+    <div class="scale-click-zone scales-54mm"></div>
+
+    <img src="SCALE_75MM" class="scale-marker scale-75mm" alt="" />
+    <div class="scale-click-zone scales-75mm"></div>
+
+    <img src="SCALE_BUST" class="scale-marker scale-bust" alt="" />
+    <div class="scale-click-zone scales-bust"></div>
+
+    <!-- ============================================================
+         5) MATERIALS PANEL (App.tsx lines 700-793)
+         ============================================================ -->
+    <img src="MATERIALS_LABEL" class="full-absolute materials" alt="" />
+    <div class="materials-trigger"></div>
+
+    <img src="MAT_SKIN"    class="material-marker skin"    alt="" />
+    <div class="material-click-zone materials-skin"></div>
+
+    <img src="MAT_METAL"   class="material-marker metal"   alt="" />
+    <div class="material-click-zone materials-metal"></div>
+
+    <img src="MAT_FABRIC"  class="material-marker fabric"  alt="" />
+    <div class="material-click-zone materials-fabric"></div>
+
+    <img src="MAT_TERRAIN" class="material-marker terrain" alt="" />
+    <div class="material-click-zone materials-terrain"></div>
+
+    <img src="MAT_LEATHER" class="material-marker leather" alt="" />
+    <div class="material-click-zone materials-leather"></div>
+
+    <img src="MAT_HAIR"    class="material-marker hair"    alt="" />
+    <div class="material-click-zone materials-hair"></div>
+
+    <!-- ============================================================
+         6) CARD NAV TRIO — prev | open dialog | next (App.tsx 794-820)
+         ============================================================ -->
+    <div class="nav-trio-wrapper">
+      <div class="nav-trio-inner">
+        <div class="nav-trio-bar">
+          <div class="nav-prev"></div>
+          <div class="nav-open"></div>
+          <div class="nav-next"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================
+         7) COVERFLOW CONTAINER — JS injects cards here (App.tsx 821-865)
+         ============================================================ -->
+    <div class="coverflow-wrapper">
+      <div class="coverflow-container">
+        <!-- cards injected by embed.js -->
+      </div>
+    </div>
+
+    <!-- ============================================================
+         8) DIALOG OVERLAY (App.tsx 870-1032) — hidden by default
+         ============================================================ -->
+    <div class="dialog-overlay">
+      <div class="dialog-container">
+
+        <!-- Dialog background image + arrow icons -->
+        <div class="dialog-body">
+          <img src="DIALOG_BG" alt="dialog" class="dialog-bg-img" />
+          <img src="DIALOG_ARROW_UP" alt="dialog" class="dialog-arrow" />
+          <div class="navigation-top"></div>
+          <img src="DIALOG_ARROW_DOWN" alt="dialog" class="dialog-arrow" />
+          <div class="navigation-bottom"></div>
+
+          <!-- Main iframe + sidebar -->
+          <div class="dialog-media">
+            <div class="dialog-media-row">
+              <iframe class="dialog-main-iframe"
+                title="vimeo-player"
+                referrerpolicy="strict-origin-when-cross-origin"
+                allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
+                allowfullscreen
+              ></iframe>
+              <div class="dialog-sidebar">
+                <!-- sidebar thumbnails injected by embed.js -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Localized dialog button images.
+             data-en-src / data-es-src let embed.js swap src on language change. -->
+        <img class="dialog-btn dialog-btn-subscribe" alt=""
+             data-en-src="DIALOG_BTN_SUBSCRIBE_EN"
+             data-es-src="DIALOG_BTN_SUBSCRIBE_ES" />
+        <img class="dialog-btn dialog-btn-buy" alt=""
+             data-en-src="DIALOG_BTN_BUY_EN"
+             data-es-src="DIALOG_BTN_BUY_ES" />
+        <img class="dialog-btn dialog-btn-comments" alt=""
+             data-en-src="DIALOG_BTN_COMMENTS_EN"
+             data-es-src="DIALOG_BTN_COMMENTS_ES" />
+
+        <!-- Close button -->
+        <img src="DIALOG_CLOSE" alt="close" class="dialog-close-img" />
+        <div class="dialog-close-zone"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ============================================================
+       9) EMBED SCRIPT (loaded last)
+          In Webflow: upload embed.js to Assets and reference it here,
+          OR paste the full embed.js inline inside an HTML Embed widget.
+     ============================================================ -->
+  <script src="./embed.js"></script>
+</body>
+</html>

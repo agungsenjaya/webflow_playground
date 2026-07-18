@@ -1,0 +1,520 @@
+/**
+ * styles.css — Plain CSS replacement for the Tailwind utility classes used
+ * across App.tsx / template.html / embed.js.
+ *
+ * Naming convention: semantic class names (e.g. .coverflow-card, .dialog-overlay)
+ * rather than 1:1 utility-per-class — easier to maintain in Webflow Designer.
+ *
+ * Load this in Webflow: Page Settings → Custom Code → Inside <head> tag:
+ *   <link rel="stylesheet" href="https://uploads-ssl.webflow.com/XXXX/styles.css">
+ * (upload styles.css to Webflow Assets first, then paste the copied URL)
+ * OR paste the whole file inside a <style>...</style> block in the same section.
+ */
+
+/* ============================================================
+   0. Reset & page shell (mirror App.tsx body div line 594)
+   ============================================================ */
+* { box-sizing: border-box; }
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+/* The main page wrapper (was: relative w-screen h-screen overflow-hidden flex flex-col justify-between items-center select-none) */
+.page-shell {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+}
+
+/* Generic helpers (replacing common Tailwind utilities) */
+.full-width { width: 100%; }
+.full-absolute {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  /* Decorative full-bleed image — never capture clicks (let click zones through). */
+  pointer-events: none;
+}
+
+/* ============================================================
+   1. Hidden Collection List (data source only)
+   ============================================================ */
+.cms-data-source { display: none !important; }
+
+
+/* ============================================================
+   2. New/Old video label flip pair (App.tsx lines 638-647)
+   ============================================================ */
+.video-label {
+  position: absolute;
+  inset: 0;
+  left: auto;
+  right: 9vw;
+  width: 20vw;
+  pointer-events: none;     /* decorative — let the trigger zone capture clicks */
+}
+.switch-videos-trigger {
+  position: absolute;
+  inset: 0;
+  left: auto;
+  right: 10vw;
+  bottom: auto;
+  height: 9vw;
+  width: 18vw;
+  cursor: pointer;
+  z-index: 30;              /* bumped — guarantee above the label images */
+  pointer-events: auto;
+}
+
+
+/* ============================================================
+   4. Scales panel (App.tsx lines 652-699)
+   ============================================================ */
+.scales { /* label image, position set inline if needed */ }
+
+.scales-trigger {
+  position: absolute;
+  inset: 0;
+  bottom: auto;
+  height: 12vw;
+  width: 15vw;
+  cursor: pointer;
+  z-index: 30;            /* bumped — guarantee clickable */
+  pointer-events: auto;
+}
+
+.scale-marker {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  /* Decorative marker image — never capture clicks. */
+  pointer-events: none;
+  /* margin-left is set dynamically by embed.js syncScaleMarkers()
+     (0 when active, -1.5vw when inactive) */
+  transition: margin-left 0.6s ease-out;
+}
+
+.scale-click-zone {
+  position: absolute;
+  inset: 0;
+  height: 9vw;
+  width: 6vw;
+  cursor: pointer;
+  z-index: 30;            /* bumped from 20 — guarantee above decorative art */
+  pointer-events: auto;   /* explicit: this IS clickable */
+}
+.scales-54mm { top: 16.5vw; height: 10vw; }
+.scales-75mm { top: 22.3vw; }
+.scales-bust { top: 29vw; }
+
+
+/* ============================================================
+   5. Materials panel (App.tsx lines 700-793)
+   ============================================================ */
+.materials { /* label image, position set inline if needed */ }
+
+.materials-trigger {
+  position: absolute;
+  inset: 0;
+  left: 12vw;
+  top: auto;
+  height: 6vw;
+  width: 17vw;
+  cursor: pointer;
+  z-index: 30;            /* bumped — guarantee clickable */
+  pointer-events: auto;
+}
+
+.material-marker {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Decorative marker image — never capture clicks (6 of these stack full-bleed). */
+  pointer-events: none;
+  /* object-position is set dynamically by embed.js syncMaterialMarkers()
+     (center 10% inactive, center 60% active) */
+  transition: object-position 0.6s ease-out;
+}
+
+.material-click-zone {
+  /* position:fixed so the zone always resolves against the viewport, NOT
+     whatever wrapper Webflow places it in. App.tsx relied on the page-shell
+     being the positioning context; in Webflow the nesting is less predictable,
+     so we pin directly to viewport for reliable placement. */
+  position: fixed;
+  height: 4.5vw;
+  width: 9vw;
+  bottom: 0;
+  cursor: pointer;
+  z-index: 9999;           /* above Webflow navbar (default z-index 1000+) */
+  pointer-events: auto;    /* explicit: this IS clickable */
+}
+/* Horizontal placement mirroring App.tsx:
+   - me-[X] zones (skin/metal/fabric) anchored from the right edge.
+   - ms-[X] zones (terrain/leather/hair) anchored from the left edge. */
+.materials-skin     { right: 27vw;  left: auto; }
+.materials-metal    { right: 15vw;  left: auto; }
+.materials-fabric   { right: 3.2vw; left: auto; }
+.materials-terrain  { left: 7.2vw;  right: auto; }
+.materials-leather  { left: 20.8vw; right: auto; }
+.materials-hair     { left: 31.8vw; right: auto; }
+
+/* Trigger zone also pinned to viewport for the same reason. */
+.materials-trigger {
+  position: fixed !important;
+  z-index: 9999;
+  pointer-events: auto;
+}
+
+
+/* ============================================================
+   6. Card nav trio (prev | open dialog | next) — App.tsx 794-820
+   Pinned to viewport so it always sits at bottom-right regardless of
+   Webflow wrapper nesting.
+   ============================================================ */
+.nav-trio-wrapper {
+  position: fixed !important;
+  right: auto;
+  bottom: 5.1vw;
+  left: auto;
+  top: auto;
+  z-index: 9999;
+}
+.nav-trio-inner {
+  margin-left: 1.2vw;
+  width: 15vw;
+}
+.nav-trio-bar {
+  height: 4.4vw;
+  width: 100%;
+  position: relative;
+  z-index: 9999;
+  display: flex;
+}
+.nav-prev, .nav-next { width: 25%; cursor: pointer; pointer-events: auto; }
+.nav-open             { width: 50%; cursor: pointer; pointer-events: auto; }
+
+
+/* ============================================================
+   7. Coverflow container & cards (App.tsx 821-865)
+   ============================================================ */
+.coverflow-wrapper {
+  position: absolute;
+  inset-inline: 0;          /* inset-x-0 */
+  top: 9vw;
+}
+
+.coverflow-container {
+  width: 100vw;
+  height: 34vw;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+  overflow: visible;
+  touch-action: none;       /* touch-none — prevent scroll hijack on swipe */
+  z-index: 10;
+  transform-style: preserve-3d;
+}
+
+.coverflow-card {
+  position: absolute;
+  width: 22vw;
+  height: 31vw;
+  border-radius: 1rem;       /* rounded-2xl */
+  overflow: hidden;
+  cursor: pointer;
+  transition: filter 0.2s ease;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+}
+.coverflow-card:hover { filter: brightness(1.1); }
+.coverflow-card.is-active { cursor: grab; }
+.coverflow-card.is-active:active { cursor: grabbing; }
+
+.coverflow-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 15%;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+  pointer-events: none;
+  border-radius: 0.5rem;     /* rounded-lg */
+}
+
+
+/* ============================================================
+   8. Dialog overlay (App.tsx 870-1032)
+   ============================================================ */
+.dialog-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  display: none;             /* shown by embed.js openDialog() */
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.7);          /* bg-black/70 */
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);              /* backdrop-blur-sm */
+}
+
+.dialog-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* The dialog body (image bg + iframes + buttons sit relative to this) */
+.dialog-body { position: relative; }
+.dialog-bg-img {
+  max-width: 90vw;
+  max-height: 90vh;
+  object-fit: contain;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* Arrow icons drawn on top of the bg image */
+.dialog-arrow {
+  position: absolute;
+  inset: 0;
+}
+.navigation-top {
+  position: absolute;
+  inset: 0;
+  left: auto;
+  right: 16vw;
+  top: 5.5vw;
+  height: 5vh;
+  width: 5vh;
+  cursor: pointer;
+  z-index: 20;
+  transition: opacity 0.3s;
+}
+.navigation-bottom {
+  position: absolute;
+  inset: 0;
+  left: auto;
+  right: 15.3vw;
+  top: auto;
+  bottom: 10.5vw;
+  height: 5vh;
+  width: 5vh;
+  cursor: pointer;
+  z-index: 20;
+  transition: opacity 0.3s;
+}
+
+/* Media area: main iframe + sidebar */
+.dialog-media {
+  position: absolute;
+  inset: 0;
+  left: 0;
+  top: 7vw;
+  height: 34vw;
+  max-width: 70vw;
+  margin: 0 auto;
+  z-index: 10;
+}
+.dialog-media-row { display: flex; gap: 1.5rem; }   /* gap-6 */
+
+.dialog-main-iframe {
+  width: 46.8vw;
+  height: 25.8vw;
+  margin: 1.5rem;            /* m-6 */
+  border-radius: 0.5rem;     /* rounded-lg */
+  border: none;
+}
+.dialog-sidebar {
+  width: 15.2vw;
+  height: 25.8vw;
+  margin: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;                 /* gap-4 */
+}
+
+/* Dialog button images (Subscribe / Buy / Comments) — localized EN/ES */
+.dialog-btn {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  pointer-events: none;
+}
+
+/* Close button */
+.dialog-close-img {
+  position: absolute;
+  top: 5%;
+  right: 3%;
+  width: 70%;
+  transition: filter 0.2s;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+  pointer-events: none;
+}
+.dialog-close-img:hover { filter: brightness(1.1); }
+.dialog-close-zone {
+  position: absolute;
+  inset: 0;
+  left: auto;
+  right: 7%;
+  top: 12%;
+  height: 3.2vw;
+  width: 3.2vw;
+  cursor: pointer;
+}
+
+/* ============================================================
+   9. Sidebar thumbnails (built dynamically by embed.js)
+   ============================================================ */
+.sidebar-item {
+  height: 8.4vw;
+  width: 100%;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+  border: 1px solid #27272a;            /* border-zinc-800 */
+  transition: border-color 0.3s;
+}
+.sidebar-item:hover { border-color: #71717a; }   /* hover:zinc-500 */
+.sidebar-item iframe {
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  border: none;
+}
+.sidebar-item-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.3s;
+}
+.sidebar-item:hover .sidebar-item-overlay { background: rgba(0, 0, 0, 0.1); }
+
+.sidebar-play-btn {
+  width: 2vw;
+  height: 2vw;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  transition: background 0.3s, transform 0.3s;
+}
+.sidebar-item:hover .sidebar-play-btn {
+  background: rgba(255, 255, 255, 0.8);
+  transform: scale(1.1);
+}
+.sidebar-play-btn svg {
+  width: 0.8vw;
+  height: 0.8vw;
+  fill: #fff;
+  transition: fill 0.3s;
+}
+.sidebar-item:hover .sidebar-play-btn svg { fill: #000; }
+
+/* Empty sidebar placeholder ("Single Video Tutorial") */
+.sidebar-placeholder {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #71717a;                          /* text-zinc-500 */
+  font-size: 1.1vw;
+  background: rgba(9, 9, 11, 0.4);         /* bg-zinc-950/40 */
+  border-radius: 0.5rem;
+  border: 1px dashed #27272a;              /* border-dashed zinc-800 */
+  padding: 1rem;
+  text-align: center;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+}
+
+/* "No videos linked" main-area fallback (App.tsx 942-950) */
+.no-video-fallback {
+  width: 46.8vw;
+  height: 25.8vw;
+  margin: 1.5rem;
+  border-radius: 0.5rem;
+  background: rgba(24, 24, 27, 0.8);       /* bg-zinc-900/80 */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  border: 1px solid rgba(63, 63, 70, 0.5); /* border-zinc-700/50 */
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  gap: 0.5rem;
+  padding: 1.5rem;
+  text-align: center;
+}
+.no-video-fallback .title {
+  font-size: 1.8vw;
+  font-weight: 700;
+  color: #d4d4d8;                          /* text-zinc-300 */
+}
+.no-video-fallback .desc {
+  font-size: 1.1vw;
+  color: #71717a;                          /* text-zinc-500 */
+  max-width: 80%;
+}
+
+
+/* ============================================================
+   10. Responsive fallback (small screens)
+      The app is designed for desktop (vw-based layout). On mobile
+      the coverflow arcs would collapse — keep a simple stacked
+      fallback that still lets users browse the tutorials.
+   ============================================================ */
+@media (max-width: 768px) {
+  .coverflow-container {
+    height: auto;
+    display: block;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+  .coverflow-card {
+    position: relative;
+    width: 60vw;
+    height: 84vw;
+    flex: 0 0 auto;
+    margin: 1rem;
+    transform: none !important;
+  }
+  .dialog-main-iframe,
+  .no-video-fallback {
+    width: 80vw;
+    height: 45vw;
+  }
+}
